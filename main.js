@@ -1,1 +1,1274 @@
-const _0x2edc89 = _0x403a; (function (_0x471f74, _0xa50b5a) { const _0x3e268d = _0x403a, _0x23522b = _0x471f74(); while (!![]) { try { const _0x5e5922 = parseInt(_0x3e268d(0x1ac)) / 0x1 * (parseInt(_0x3e268d(0x1f8)) / 0x2) + parseInt(_0x3e268d(0x175)) / 0x3 + -parseInt(_0x3e268d(0x154)) / 0x4 * (parseInt(_0x3e268d(0x12a)) / 0x5) + -parseInt(_0x3e268d(0x1f1)) / 0x6 + -parseInt(_0x3e268d(0x202)) / 0x7 + parseInt(_0x3e268d(0x144)) / 0x8 + parseInt(_0x3e268d(0x1af)) / 0x9; if (_0x5e5922 === _0xa50b5a) break; else _0x23522b['push'](_0x23522b['shift']()); } catch (_0x5b1e04) { _0x23522b['push'](_0x23522b['shift']()); } } }(_0x2ce1, 0xa451a)); const WORLD_WIDTH = 0x1388, WORLD_DEPTH = 0x1388, WORLD_RADIUS = WORLD_WIDTH / 0x2, HALF_WIDTH = WORLD_WIDTH / 0x2, HALF_DEPTH = WORLD_DEPTH / 0x2; let PLAYER_SPEED = 0x78; const PLAYER_ACCEL = 0x4b0, PLAYER_FRICTION = 0x10, PLAYER_RADIUS = 0xa, PLAYER_HEIGHT = 0x18, JUMP_POWER = 0x78, JUMP_GRAVITY = 0xb4; let maxVisDist = 0x1869f, HORIZON_SINK_START = 0xdac, HORIZON_SINK_END = 0x3e80, HORIZON_MAX_SINK = 0x168, HORIZON_MIN_SCALE = 0x0, camAngleDeg = 0x4b, camYawDeg = 0xb4, camHeight = 0x96, camFov = 0x32; const PAL = { 'bg': 0x1a1a2e, 'floorPosZ': 0xfff04f, 'floorNegZ': 0x665105, 'grass': 0xf0c830, 'shadow': 0xe0e1a }; class PerformanceBuffer { constructor(_0x446e4f = 0x78) { const _0x4a13fc = _0x403a; this[_0x4a13fc(0x210)] = _0x446e4f, this['buffer'] = new Float32Array(_0x446e4f), this[_0x4a13fc(0x214)] = 0x0, this[_0x4a13fc(0x162)] = 0x0, this['hudEl'] = null, this[_0x4a13fc(0x212)] = null, this[_0x4a13fc(0x18a)] = null, this['spikeMsEl'] = null, this[_0x4a13fc(0x20b)] = null, this['updateInterval'] = 0xa, this['frameCounter'] = 0x0, this[_0x4a13fc(0x1bd)] = null; } [_0x2edc89(0x1bc)](_0x3c9724 = 'perf-hud') { const _0x42755d = _0x2edc89; this['hudEl'] = document[_0x42755d(0x14c)](_0x3c9724); if (this[_0x42755d(0x143)]) { this[_0x42755d(0x212)] = this[_0x42755d(0x143)][_0x42755d(0x158)](_0x42755d(0x127)), this[_0x42755d(0x18a)] = this[_0x42755d(0x143)][_0x42755d(0x158)](_0x42755d(0x189)), this['spikeMsEl'] = this[_0x42755d(0x143)][_0x42755d(0x158)](_0x42755d(0x17c)), this[_0x42755d(0x20b)] = this['hudEl'][_0x42755d(0x158)]('.perf-diff'); const _0x47d36f = document[_0x42755d(0x14c)](_0x42755d(0x151)); if (_0x47d36f) _0x47d36f[_0x42755d(0x192)]('click', () => this[_0x42755d(0x136)]()); const _0x1e515b = document['getElementById'](_0x42755d(0x1d5)); if (_0x1e515b) _0x1e515b['addEventListener']('click', () => this[_0x42755d(0x19f)]()); } } ['record'](_0x201f84) { const _0x4864cd = _0x2edc89; this[_0x4864cd(0x1e6)][this[_0x4864cd(0x214)]] = _0x201f84, this[_0x4864cd(0x214)] = (this[_0x4864cd(0x214)] + 0x1) % this[_0x4864cd(0x210)]; if (this[_0x4864cd(0x162)] < this[_0x4864cd(0x210)]) this[_0x4864cd(0x162)]++; this[_0x4864cd(0x12e)]++, this[_0x4864cd(0x12e)] >= this['updateInterval'] && (this[_0x4864cd(0x12e)] = 0x0, this[_0x4864cd(0x211)]()); } [_0x2edc89(0x187)]() { const _0x227396 = _0x2edc89; if (this[_0x227396(0x162)] === 0x0) return { 'fps': 0x0, 'avgMs': 0x0, 'maxMs': 0x0, 'minMs': 0x0, 'p99Ms': 0x0 }; let _0x3b50e7 = 0x0, _0x1d58f0 = 0x0, _0x4fb861 = Infinity; const _0x3a954d = new Float32Array(this[_0x227396(0x162)]); for (let _0x415822 = 0x0; _0x415822 < this[_0x227396(0x162)]; _0x415822++) { const _0x3e41c7 = this[_0x227396(0x1e6)][_0x415822]; _0x3b50e7 += _0x3e41c7, _0x3a954d[_0x415822] = _0x3e41c7; if (_0x3e41c7 > _0x1d58f0) _0x1d58f0 = _0x3e41c7; if (_0x3e41c7 < _0x4fb861) _0x4fb861 = _0x3e41c7; } const _0x3d23b7 = _0x3b50e7 / this[_0x227396(0x162)], _0x40a824 = _0x3d23b7 > 0x0 ? 0x3e8 / _0x3d23b7 : 0x0; _0x3a954d[_0x227396(0x1fb)](); const _0x30f6f5 = Math[_0x227396(0x1f2)](Math['floor'](this[_0x227396(0x162)] * 0.99), this[_0x227396(0x162)] - 0x1), _0xfe04fa = _0x3a954d[_0x30f6f5]; return { 'fps': _0x40a824, 'avgMs': _0x3d23b7, 'maxMs': _0x1d58f0, 'minMs': _0x4fb861, 'p99Ms': _0xfe04fa }; } ['setBaseline']() { const _0x2e9aae = _0x2edc89, _0x747e92 = this['getStats'](); this[_0x2e9aae(0x1bd)] = _0x747e92['avgMs'], this[_0x2e9aae(0x20b)] && (this[_0x2e9aae(0x20b)][_0x2e9aae(0x1e8)] = _0x2e9aae(0x13e) + this[_0x2e9aae(0x1bd)][_0x2e9aae(0x205)](0x1) + _0x2e9aae(0x19d), this['diffEl'][_0x2e9aae(0x140)]['color'] = _0x2e9aae(0x14e)); } ['resetBaseline']() { const _0x283140 = _0x2edc89; this['baselineAvgMs'] = null, this[_0x283140(0x20b)] && (this['diffEl'][_0x283140(0x1e8)] = _0x283140(0x199), this[_0x283140(0x20b)][_0x283140(0x140)][_0x283140(0x155)] = _0x283140(0x195)); } [_0x2edc89(0x211)]() { const _0x3af90e = _0x2edc89; if (!this[_0x3af90e(0x143)]) this[_0x3af90e(0x1bc)](); if (!this['hudEl']) return; const _0x541168 = this['getStats'](); if (this['fpsEl']) this[_0x3af90e(0x212)][_0x3af90e(0x1e8)] = Math[_0x3af90e(0x1a6)](_0x541168[_0x3af90e(0x215)]); if (this[_0x3af90e(0x18a)]) this['avgMsEl'][_0x3af90e(0x1e8)] = _0x541168[_0x3af90e(0x1ea)]['toFixed'](0x1) + 'ms'; if (this['spikeMsEl']) this[_0x3af90e(0x149)]['textContent'] = _0x541168[_0x3af90e(0x1ef)][_0x3af90e(0x205)](0x1) + 'ms'; if (this[_0x3af90e(0x20b)]) { if (this[_0x3af90e(0x1bd)] !== null) { const _0x202279 = _0x541168[_0x3af90e(0x1ea)] - this[_0x3af90e(0x1bd)], _0x248b42 = _0x202279 >= 0x0 ? '+' : ''; this[_0x3af90e(0x20b)]['textContent'] = '' + _0x248b42 + _0x202279[_0x3af90e(0x205)](0x2) + 'ms'; if (_0x202279 > 0x1) this[_0x3af90e(0x20b)]['style'][_0x3af90e(0x155)] = '#ff6b6b'; else _0x202279 < -0.5 ? this['diffEl'][_0x3af90e(0x140)]['color'] = _0x3af90e(0x14e) : this['diffEl'][_0x3af90e(0x140)][_0x3af90e(0x155)] = _0x3af90e(0x1d6); } else this['diffEl'][_0x3af90e(0x1e8)] = '--', this['diffEl'][_0x3af90e(0x140)][_0x3af90e(0x155)] = _0x3af90e(0x195); } } } const perfMonitor = new PerformanceBuffer(0x78); let windAudio = null, isAudioInitialized = ![], windVolume = 0.05, isMuted = ![]; function initAudio() { const _0x10171c = _0x2edc89; if (windAudio) return; windAudio = new Audio('WIND-SFX.mp3'), windAudio['loop'] = !![], windAudio[_0x10171c(0x18f)] = isMuted ? 0x0 : windVolume, windAudio[_0x10171c(0x192)](_0x10171c(0x224), () => { const _0x534b97 = _0x10171c; if (windAudio[_0x534b97(0x1c9)]['includes'](_0x534b97(0x1c1))) { windAudio[_0x534b97(0x1c9)] = _0x534b97(0x135); if (isAudioInitialized && !isMuted) windAudio[_0x534b97(0x13a)](); } }); const _0x33b42d = () => { const _0x9be963 = _0x10171c; if (!windAudio) return; windAudio[_0x9be963(0x13a)]()[_0x9be963(0x1b1)](() => { isAudioInitialized = !![], updateAudioUI(); })[_0x9be963(0x145)](_0x3c2714 => { const _0x34bc1f = _0x9be963; console[_0x34bc1f(0x177)](_0x34bc1f(0x190), _0x3c2714); }), window[_0x9be963(0x16e)](_0x9be963(0x133), _0x33b42d), window[_0x9be963(0x16e)](_0x9be963(0x12b), _0x33b42d), window[_0x9be963(0x16e)](_0x9be963(0x1a9), _0x33b42d); }; window[_0x10171c(0x192)](_0x10171c(0x133), _0x33b42d), window['addEventListener']('keydown', _0x33b42d), window['addEventListener']('touchstart', _0x33b42d), setupAudioControls(); } function setupAudioControls() { const _0x5754a3 = _0x2edc89, _0x47a3bd = document[_0x5754a3(0x14c)](_0x5754a3(0x1f6)), _0x517467 = document['getElementById'](_0x5754a3(0x134)), _0x39d13f = document[_0x5754a3(0x14c)](_0x5754a3(0x191)); _0x47a3bd && _0x517467 && _0x47a3bd[_0x5754a3(0x192)](_0x5754a3(0x1e3), _0x409bf9 => { const _0x8473e2 = _0x5754a3; windVolume = parseFloat(_0x409bf9[_0x8473e2(0x1c2)][_0x8473e2(0x120)]), _0x517467[_0x8473e2(0x1e8)] = Math[_0x8473e2(0x1a6)](windVolume * 0x64) + '%', windAudio && !isMuted && (windAudio[_0x8473e2(0x18f)] = windVolume); }), _0x39d13f && _0x39d13f['addEventListener'](_0x5754a3(0x1f7), _0xcbe4e9 => { const _0x282946 = _0x5754a3; isMuted = _0xcbe4e9[_0x282946(0x1c2)][_0x282946(0x193)], windAudio && (windAudio[_0x282946(0x18f)] = isMuted ? 0x0 : windVolume); }); } function updateAudioUI() { const _0x4a10b6 = _0x2edc89, _0x4424be = document[_0x4a10b6(0x14c)]('wind-audio-status'); _0x4424be && (_0x4424be[_0x4a10b6(0x1e8)] = isAudioInitialized ? _0x4a10b6(0x16b) : _0x4a10b6(0x186), _0x4424be[_0x4a10b6(0x140)][_0x4a10b6(0x155)] = isAudioInitialized ? _0x4a10b6(0x14e) : _0x4a10b6(0x1dd)); } document[_0x2edc89(0x1b8)] === _0x2edc89(0x1f0) ? document[_0x2edc89(0x192)](_0x2edc89(0x198), initAudio) : initAudio(); const renderer = new THREE[(_0x2edc89(0x128))]({ 'antialias': !![] }); renderer[_0x2edc89(0x18e)](Math[_0x2edc89(0x1f2)](window[_0x2edc89(0x167)], 0x2)), renderer[_0x2edc89(0x121)](window[_0x2edc89(0x110)], window[_0x2edc89(0x11f)]), renderer[_0x2edc89(0x1d3)](PAL['bg']), renderer['shadowMap'][_0x2edc89(0x1cf)] = !![], renderer[_0x2edc89(0x21c)][_0x2edc89(0x1e2)] = THREE[_0x2edc89(0x164)], document[_0x2edc89(0x1a3)][_0x2edc89(0x1db)](renderer[_0x2edc89(0x1a1)]); const scene = new THREE[(_0x2edc89(0x170))](), ambientLight = new THREE[(_0x2edc89(0x1a0))](0xffffff, 0.6); scene['add'](ambientLight); const dirLight = new THREE[(_0x2edc89(0x16c))](0xffffff, 0.85); dirLight['position'][_0x2edc89(0x218)](0x0, 0x9c4, -0x1388), dirLight[_0x2edc89(0x1bf)] = !![], dirLight[_0x2edc89(0x147)][_0x2edc89(0x15e)]['width'] = 0x800, dirLight[_0x2edc89(0x147)][_0x2edc89(0x15e)][_0x2edc89(0x1b9)] = 0x800, dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)][_0x2edc89(0x1d0)] = -0x7d0, dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)][_0x2edc89(0x1bb)] = 0x7d0, dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)]['top'] = 0x7d0, dirLight['shadow'][_0x2edc89(0x16d)][_0x2edc89(0x1b0)] = -0x7d0, dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)][_0x2edc89(0x1a7)] = 0x64, dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)]['far'] = 0x2328, dirLight['shadow']['bias'] = -0.0002, dirLight[_0x2edc89(0x147)]['camera']['updateProjectionMatrix'](), scene[_0x2edc89(0x152)](dirLight), scene[_0x2edc89(0x152)](dirLight[_0x2edc89(0x1c2)]); let aspect = window[_0x2edc89(0x110)] / window[_0x2edc89(0x11f)], camera; function initCamera() { const _0x29c6ad = _0x2edc89; camera = new THREE[(_0x29c6ad(0x1e7))](camFov, aspect, 0xa, 0x3e80); } const horizonTrackedObjects = []; function registerHorizonObject(_0x1ec984, _0x27bf78 = null, _0x3a8b6f = null) { const _0x3f3286 = _0x2edc89; if (!_0x1ec984) return; const _0x1f0652 = _0x27bf78 !== null ? typeof _0x27bf78 === _0x3f3286(0x1e1) ? new THREE['Vector3'](_0x27bf78, _0x27bf78, _0x27bf78) : _0x27bf78['clone']() : _0x1ec984[_0x3f3286(0x15d)][_0x3f3286(0x17d)](), _0xeae243 = _0x3a8b6f !== null ? _0x3a8b6f : _0x1ec984[_0x3f3286(0x1ad)]['y']; horizonTrackedObjects[_0x3f3286(0x171)]({ 'obj': _0x1ec984, 'baseScale': _0x1f0652, 'baseY': _0xeae243 }); } function updateHorizonDisplacement(_0x345629, _0x141acb, _0x2b89fd = 0x0) { const _0x42d98f = _0x2edc89; if (horizonTrackedObjects[_0x42d98f(0x1b4)] === 0x0) return; const _0x15f0fa = Math[_0x42d98f(0x1c3)](0x1, HORIZON_SINK_END - HORIZON_SINK_START), _0x3d1bd7 = typeof getGroundHeight === 'function' ? getGroundHeight(_0x345629, _0x141acb) : 0x0, _0x46d4ef = Math[_0x42d98f(0x1c3)](0x0, _0x2b89fd - _0x3d1bd7); for (let _0x4ba2f7 = 0x0; _0x4ba2f7 < horizonTrackedObjects[_0x42d98f(0x1b4)]; _0x4ba2f7++) { const _0x2dae98 = horizonTrackedObjects[_0x4ba2f7], _0x1a2b3e = _0x2dae98[_0x42d98f(0x1eb)], _0x502f25 = _0x1a2b3e[_0x42d98f(0x1ad)]['x'], _0x1adaaa = _0x1a2b3e[_0x42d98f(0x1ad)]['z'], _0x14ecf5 = _0x502f25 - _0x345629, _0x470bac = _0x1adaaa - _0x141acb, _0x2787b7 = Math[_0x42d98f(0x216)](_0x14ecf5 * _0x14ecf5 + _0x470bac * _0x470bac); if (_0x2787b7 <= HORIZON_SINK_START) _0x1a2b3e[_0x42d98f(0x15d)][_0x42d98f(0x15b)](_0x2dae98[_0x42d98f(0x172)]), _0x1a2b3e[_0x42d98f(0x1ad)]['y'] = _0x2dae98['baseY'], _0x1a2b3e[_0x42d98f(0x1a8)] = !![]; else { const _0x333e48 = Math[_0x42d98f(0x1f2)](0x1, (_0x2787b7 - HORIZON_SINK_START) / _0x15f0fa), _0x5e432f = THREE[_0x42d98f(0x180)][_0x42d98f(0x1c8)](0x1, HORIZON_MIN_SCALE, _0x333e48), _0x3c4339 = Math[_0x42d98f(0x17b)](_0x333e48, 0.9) * HORIZON_MAX_SINK, _0x383f58 = _0x46d4ef * Math['pow'](_0x333e48, 1.2) * 0x5; _0x5e432f <= 0.001 ? _0x1a2b3e['visible'] = ![] : (_0x1a2b3e[_0x42d98f(0x1a8)] = !![], _0x1a2b3e[_0x42d98f(0x15d)][_0x42d98f(0x218)](_0x2dae98[_0x42d98f(0x172)]['x'] * _0x5e432f, _0x2dae98['baseScale']['y'] * _0x5e432f, _0x2dae98[_0x42d98f(0x172)]['z'] * _0x5e432f), _0x1a2b3e[_0x42d98f(0x1ad)]['y'] = _0x2dae98[_0x42d98f(0x166)] - _0x3c4339 - _0x383f58); } } } const floorGeo = new THREE[(_0x2edc89(0x165))](WORLD_RADIUS, 0x80), colorPos = new THREE[(_0x2edc89(0x13b))](PAL[_0x2edc89(0x139)]), colorNeg = new THREE[(_0x2edc89(0x13b))](PAL[_0x2edc89(0x196)]), posAttr = floorGeo['attributes'][_0x2edc89(0x1ad)], floorColors = new Float32Array(posAttr[_0x2edc89(0x162)] * 0x3), _tempColor = new THREE[(_0x2edc89(0x13b))](); for (let i = 0x0; i < posAttr['count']; i++) { const ly = posAttr['getY'](i), t = Math[_0x2edc89(0x1c3)](0x0, Math[_0x2edc89(0x1f2)](0x1, 0.5 - ly / (WORLD_RADIUS * 0x2))); _tempColor[_0x2edc89(0x15b)](colorNeg)['lerp'](colorPos, t), floorColors[i * 0x3] = _tempColor['r'], floorColors[i * 0x3 + 0x1] = _tempColor['g'], floorColors[i * 0x3 + 0x2] = _tempColor['b']; } floorGeo[_0x2edc89(0x168)](_0x2edc89(0x155), new THREE[(_0x2edc89(0x1fc))](floorColors, 0x3)); const floorMat = new THREE[(_0x2edc89(0x1f9))]({ 'vertexColors': !![], 'roughness': 0.8, 'metalness': 0.1, 'side': THREE[_0x2edc89(0x1ff)] }), floor = new THREE['Mesh'](floorGeo, floorMat); floor[_0x2edc89(0x1a5)]['x'] = -Math['PI'] / 0x2, floor[_0x2edc89(0x1ad)]['y'] = 0x0, floor[_0x2edc89(0x15f)] = !![], scene[_0x2edc89(0x152)](floor); const obstacles = [], animatedMonuments = []; function createTallMonolith(_0x259dd8, _0x2aa798) { const _0x35ec38 = _0x2edc89, _0x42be90 = new THREE[(_0x35ec38(0x14d))](), _0x16dac7 = new THREE['MeshStandardMaterial']({ 'color': 0x2b2d3d, 'roughness': 0.9, 'metalness': 0.1, 'flatShading': !![] }), _0xb9e9e7 = new THREE[(_0x35ec38(0x1d2))](0x8c, 0xb4, 0x28, 0x8), _0x4c1f9d = new THREE['Mesh'](_0xb9e9e7, _0x16dac7); _0x4c1f9d[_0x35ec38(0x1ad)]['y'] = 0x14, _0x4c1f9d[_0x35ec38(0x1bf)] = !![], _0x4c1f9d[_0x35ec38(0x15f)] = !![], _0x42be90['add'](_0x4c1f9d); const _0x114075 = 0x8; for (let _0x587660 = 0x0; _0x587660 < _0x114075; _0x587660++) { const _0x55129f = _0x587660 / _0x114075 * Math['PI'] * 0x2 + (_0x587660 % 0x2 === 0x0 ? 0.2 : -0.1), _0x589e2d = 0x82 + _0x587660 % 0x3 * 0x19, _0x17e92f = Math['cos'](_0x55129f) * _0x589e2d, _0x5c63e6 = Math[_0x35ec38(0x20a)](_0x55129f) * _0x589e2d, _0x1d44f7 = new THREE[(_0x35ec38(0x183))](0x23 + _0x587660 % 0x4 * 0xc, 0x0), _0x36a49b = new THREE[(_0x35ec38(0x114))](_0x1d44f7, _0x16dac7); _0x36a49b['position'][_0x35ec38(0x218)](_0x17e92f, 0x12 + _0x587660 % 0x2 * 0x8, _0x5c63e6), _0x36a49b['rotation'][_0x35ec38(0x218)](_0x587660 * 0.7 % 1.5, _0x587660 * 1.3 % 3.14, _0x587660 * 0.9 % 1.2), _0x36a49b[_0x35ec38(0x15d)][_0x35ec38(0x218)](0x1 + _0x587660 % 0x3 * 0.4, 1.2 + _0x587660 % 0x2 * 0.6, 0.9 + _0x587660 % 0x4 * 0.3), _0x36a49b['castShadow'] = !![], _0x36a49b['receiveShadow'] = !![], _0x42be90[_0x35ec38(0x152)](_0x36a49b); } const _0x2eec0b = new THREE[(_0x35ec38(0x1d2))](0x5f, 0x7d, 0x23, 0x8), _0x1133a0 = new THREE[(_0x35ec38(0x114))](_0x2eec0b, _0x16dac7); _0x1133a0[_0x35ec38(0x1ad)]['y'] = 0x32, _0x1133a0['castShadow'] = !![], _0x1133a0[_0x35ec38(0x15f)] = !![], _0x42be90[_0x35ec38(0x152)](_0x1133a0); const _0x2881b8 = new THREE[(_0x35ec38(0x1d2))](0x28, 0x4b, 0x1cc, 0x8), _0x2d9040 = new THREE[(_0x35ec38(0x1f9))]({ 'color': 0x4d3e58, 'emissive': 0x1a2e47, 'emissiveIntensity': 0.5, 'roughness': 0.6, 'flatShading': !![] }), _0x56e141 = new THREE[(_0x35ec38(0x114))](_0x2881b8, _0x2d9040); _0x56e141[_0x35ec38(0x1ad)]['y'] = 0x41 + 0xe6, _0x56e141[_0x35ec38(0x1bf)] = !![], _0x56e141['receiveShadow'] = !![], _0x42be90[_0x35ec38(0x152)](_0x56e141); const _0x55d458 = new THREE[(_0x35ec38(0x1d2))](0x12, 0x12, 0x1e0, 0x8), _0x339a63 = new THREE[(_0x35ec38(0x1f9))]({ 'color': 0xe1ff, 'emissive': 0xb4ff, 'emissiveIntensity': 1.6, 'roughness': 0.15 }), _0x4f6cac = new THREE[(_0x35ec38(0x114))](_0x55d458, _0x339a63); _0x4f6cac[_0x35ec38(0x1ad)]['y'] = 0x41 + 0xf0, _0x42be90[_0x35ec38(0x152)](_0x4f6cac); const _0x1ba92d = new THREE[(_0x35ec38(0x1d8))](0x2d, 0x0), _0x3e328d = new THREE['MeshStandardMaterial']({ 'color': 0x70f0ff, 'emissive': 0xc8ff, 'emissiveIntensity': 1.2, 'roughness': 0.15, 'metalness': 0.3, 'flatShading': !![] }), _0x1daa9c = new THREE[(_0x35ec38(0x114))](_0x1ba92d, _0x3e328d); _0x1daa9c[_0x35ec38(0x1ad)]['y'] = 0x41 + 0x1cc + 0x41, _0x1daa9c[_0x35ec38(0x15d)][_0x35ec38(0x218)](0x1, 1.8, 0x1), _0x1daa9c[_0x35ec38(0x1bf)] = !![], _0x42be90[_0x35ec38(0x152)](_0x1daa9c); const _0x54ec3d = []; function _0x51db24(_0x31aa88, _0x5c5328, _0x4916f, _0x390f01, _0x3f599d, _0x8de883, _0x4f8e2b) { const _0x285ec4 = _0x35ec38, _0x49359c = new THREE[(_0x285ec4(0x176))](_0x31aa88, _0x5c5328, 0x8, 0x14), _0x58a71f = new THREE['MeshStandardMaterial']({ 'color': _0x390f01, 'emissive': _0x3f599d, 'emissiveIntensity': 0x2, 'roughness': 0.1 }), _0x2e74a7 = new THREE[(_0x285ec4(0x114))](_0x49359c, _0x58a71f); _0x2e74a7[_0x285ec4(0x1a5)]['x'] = Math['PI'] / 0x2, _0x2e74a7['position']['y'] = _0x4916f, _0x42be90[_0x285ec4(0x152)](_0x2e74a7), _0x54ec3d[_0x285ec4(0x171)]({ 'mesh': _0x2e74a7, 'baseY': _0x4916f, 'speed': _0x8de883, 'oscAmp': _0x4f8e2b }); } _0x51db24(0x4e, 0x6, 0x41 + 0xa0, 0xaaff, 0x88ff, -0.6, 0xa), _0x51db24(0x3e, 0x7, 0x41 + 0x136, 0xf0ff, 0xd0ff, 0.9, 0xe), _0x51db24(0x2e, 0x5, 0x41 + 0x1ae, 0x80f5ff, 0xe1ff, -1.2, 0x8), _0x42be90[_0x35ec38(0x15d)][_0x35ec38(0x218)](0x3, 0x3, 0x3), _0x42be90[_0x35ec38(0x1ad)][_0x35ec38(0x218)](_0x259dd8, 0x0, _0x2aa798), scene[_0x35ec38(0x152)](_0x42be90), animatedMonuments['push']({ 'group': _0x42be90, 'crystal': _0x1daa9c, 'rings': _0x54ec3d }), _0x42be90[_0x35ec38(0x1ab)](!![]); const _0x70962f = new THREE[(_0x35ec38(0x10f))]()[_0x35ec38(0x142)](_0x4c1f9d); obstacles[_0x35ec38(0x171)]({ 'mesh': _0x4c1f9d, 'box': _0x70962f }), typeof registerHorizonObject === _0x35ec38(0x184) && registerHorizonObject(_0x42be90); } function spawnMonumentGrid() { const _0x3f5d43 = [{ 'x': 0x0, 'z': -0xbb8 }, { 'x': 0x1770, 'z': 0x1770 }, { 'x': -0x1770, 'z': 0x1770 }, { 'x': 0x2ee0, 'z': -0x2ee0 }, { 'x': -0x2ee0, 'z': -0x2ee0 }, { 'x': 0x0, 'z': 0x2ee0 }, { 'x': -0x36b0, 'z': 0x0 }, { 'x': 0x36b0, 'z': 0x0 }]; _0x3f5d43['forEach'](_0x5d0f2a => createTallMonolith(_0x5d0f2a['x'], _0x5d0f2a['z'])); } spawnMonumentGrid(); let _hrtfSpatialTensorMesh = null, _spectralTapCapacity = 0x13880; const _ACOUSTIC_OCTAVE_STRIDE = 0x190, _HESSIAN_RADIAL_DEPTH = 0x5, _FOURIER_MATRIX_DIM = _HESSIAN_RADIAL_DEPTH * 0x2 + 0x1, _TOTAL_HARMONIC_CELLS = _FOURIER_MATRIX_DIM * _FOURIER_MATRIX_DIM; let _currentResonantSectorX = null, _currentResonantSectorZ = null; const _dspBiquadUniforms = { 'uAudioEmitterNode': { 'value': new THREE[(_0x2edc89(0x146))](0x0, -0x3e7, 0x0) }, 'uEarCanalOrigin': { 'value': new THREE[(_0x2edc89(0x146))](0x0, 0x0, 0x0) }, 'uHeadOrientationVector': { 'value': new THREE[(_0x2edc89(0x146))](0x0, 0x0, -0x1) }, 'uPsychoacousticDecayAngle': { 'value': 0.1 }, 'uFundamentalModulationHz': { 'value': 0x0 }, 'uNyquistDistanceHorizon': { 'value': 0xaf0 }, 'uAcousticProximityFalloff': { 'value': 0x18 } }; function _pseudoWhitenoiseGenerator(_0x5cac49, _0x5a2754, _0x33e156, _0x2b5e70 = 0x0) { const _0x15839a = _0x2edc89, _0x372340 = Math['sin'](_0x5cac49 * 12.9898 + _0x5a2754 * 78.233 + _0x33e156 * 43758.5453 + _0x2b5e70 * 19.19) * 43758.5453; return _0x372340 - Math[_0x15839a(0x213)](_0x372340); } function _synthesizeDipoleResonanceRibbon() { const _0x50592a = _0x2edc89, _0x28f9c3 = 2.2, _0x1c84be = 0xa, _0x3ac5f9 = 0.25, _0x1b0254 = _0x28f9c3 / 0x2, _0x33f59e = _0x1b0254 * _0x3ac5f9, _0x146d07 = 1.8, _0x2abd54 = 1.8, _0x4f6d07 = new Float32Array([-_0x1b0254, 0x0, 0x0, _0x1b0254, 0x0, 0x0, -_0x33f59e, _0x1c84be, 0x0, _0x33f59e, _0x1c84be, 0x0, 0x0, 0x0, -_0x1b0254, 0x0, 0x0, _0x1b0254, 0x0, _0x1c84be, -_0x33f59e, 0x0, _0x1c84be, _0x33f59e, _0x146d07 - _0x1b0254, 0x0, _0x2abd54, _0x146d07 + _0x1b0254, 0x0, _0x2abd54, _0x146d07 - _0x33f59e, _0x1c84be, _0x2abd54, _0x146d07 + _0x33f59e, _0x1c84be, _0x2abd54, _0x146d07, 0x0, _0x2abd54 - _0x1b0254, _0x146d07, 0x0, _0x2abd54 + _0x1b0254, _0x146d07, _0x1c84be, _0x2abd54 - _0x33f59e, _0x146d07, _0x1c84be, _0x2abd54 + _0x33f59e]), _0x360b03 = [0x0, 0x1, 0x2, 0x2, 0x1, 0x3, 0x4, 0x5, 0x6, 0x6, 0x5, 0x7, 0x8, 0x9, 0xa, 0xa, 0x9, 0xb, 0xc, 0xd, 0xe, 0xe, 0xd, 0xf], _0x21eb3f = new Float32Array([0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1]), _0x51e596 = new THREE[(_0x50592a(0x115))](); return _0x51e596['setAttribute']('position', new THREE[(_0x50592a(0x1fc))](_0x4f6d07, 0x3)), _0x51e596[_0x50592a(0x168)]('aOvertoneHarmonic', new THREE[(_0x50592a(0x1fc))](_0x21eb3f, 0x1)), _0x51e596[_0x50592a(0x123)](_0x360b03), _0x51e596['computeVertexNormals'](), _0x51e596; } function _convolveSpectralFrequencyBin(_0x3feb4c, _0x5f09bb, _0x11c587, _0x1ab24d) { const _0x41dc7e = _0x2edc89, _0x295a55 = _0x3feb4c * _ACOUSTIC_OCTAVE_STRIDE - _ACOUSTIC_OCTAVE_STRIDE / 0x2, _0x4ad45f = _0x5f09bb * _ACOUSTIC_OCTAVE_STRIDE - _ACOUSTIC_OCTAVE_STRIDE / 0x2, _0x1b60fa = _hrtfSpatialTensorMesh[_0x41dc7e(0x119)]['array']; for (let _0x1331e8 = 0x0; _0x1331e8 < _0x1ab24d; _0x1331e8++) { const _0x418483 = _0x11c587 + _0x1331e8; if (_0x418483 >= _spectralTapCapacity) break; const _0x3e6d11 = _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x1) * _ACOUSTIC_OCTAVE_STRIDE, _0x4bf36f = _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x2) * _ACOUSTIC_OCTAVE_STRIDE, _0x1866cd = _0x295a55 + _0x3e6d11, _0x213528 = _0x4ad45f + _0x4bf36f, _0x59550f = typeof getGroundHeight === _0x41dc7e(0x184) ? getGroundHeight(_0x1866cd, _0x213528) : 0x0, _0x2a4ce5 = _0x59550f > 0x5 ? 0x0 : _0x59550f, _0x1134d7 = _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x3) * Math['PI'] * 0x2, _0x596db9 = 0.85 + _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x4) * 1.55, _0x59f073 = Math[_0x41dc7e(0x17e)](_0x1134d7) * _0x596db9, _0x1b7cb7 = Math['sin'](_0x1134d7) * _0x596db9, _0x46c9aa = _0x418483 * 0x10; _0x1b60fa[_0x46c9aa] = _0x59f073, _0x1b60fa[_0x46c9aa + 0x1] = 0x0, _0x1b60fa[_0x46c9aa + 0x2] = -_0x1b7cb7, _0x1b60fa[_0x46c9aa + 0x3] = 0x0, _0x1b60fa[_0x46c9aa + 0x4] = 0x0, _0x1b60fa[_0x46c9aa + 0x5] = _0x596db9, _0x1b60fa[_0x46c9aa + 0x6] = 0x0, _0x1b60fa[_0x46c9aa + 0x7] = 0x0, _0x1b60fa[_0x46c9aa + 0x8] = _0x1b7cb7, _0x1b60fa[_0x46c9aa + 0x9] = 0x0, _0x1b60fa[_0x46c9aa + 0xa] = _0x59f073, _0x1b60fa[_0x46c9aa + 0xb] = 0x0, _0x1b60fa[_0x46c9aa + 0xc] = _0x1866cd, _0x1b60fa[_0x46c9aa + 0xd] = _0x2a4ce5, _0x1b60fa[_0x46c9aa + 0xe] = _0x213528, _0x1b60fa[_0x46c9aa + 0xf] = 0x1; } } function _shiftHarmonicPhaseMatrix(_0xb53363, _0x3fae71, _0x14c0ff = 0x0, _0x27c732 = -0x1) { const _0x17c6f4 = _0x2edc89; if (!_hrtfSpatialTensorMesh) return; const _0x8384e3 = _0xb53363 + _0x14c0ff * (_ACOUSTIC_OCTAVE_STRIDE * 1.5), _0x5e451c = _0x3fae71 + _0x27c732 * (_ACOUSTIC_OCTAVE_STRIDE * 1.5), _0x2d3b7a = Math[_0x17c6f4(0x213)]((_0x8384e3 + _ACOUSTIC_OCTAVE_STRIDE / 0x2) / _ACOUSTIC_OCTAVE_STRIDE), _0x470f41 = Math[_0x17c6f4(0x213)]((_0x5e451c + _ACOUSTIC_OCTAVE_STRIDE / 0x2) / _ACOUSTIC_OCTAVE_STRIDE); if (_0x2d3b7a === _currentResonantSectorX && _0x470f41 === _currentResonantSectorZ) return; _currentResonantSectorX = _0x2d3b7a, _currentResonantSectorZ = _0x470f41; const _0xc1a099 = Math[_0x17c6f4(0x213)](_spectralTapCapacity / _TOTAL_HARMONIC_CELLS); let _0x432e27 = 0x0; const _0x12ae29 = _hrtfSpatialTensorMesh[_0x17c6f4(0x119)][_0x17c6f4(0x1e9)]; for (let _0x5da4a7 = _0x2d3b7a - _HESSIAN_RADIAL_DEPTH; _0x5da4a7 <= _0x2d3b7a + _HESSIAN_RADIAL_DEPTH; _0x5da4a7++) { for (let _0xf8acf8 = _0x470f41 - _HESSIAN_RADIAL_DEPTH; _0xf8acf8 <= _0x470f41 + _HESSIAN_RADIAL_DEPTH; _0xf8acf8++) { _convolveSpectralFrequencyBin(_0x5da4a7, _0xf8acf8, _0x432e27, _0xc1a099), _0x432e27 += _0xc1a099; } } for (let _0x1a8bc4 = _0x432e27; _0x1a8bc4 < _spectralTapCapacity; _0x1a8bc4++) { const _0x1f50a6 = _0x1a8bc4 * 0x10; for (let _0x364620 = 0x0; _0x364620 < 0x10; _0x364620++) { _0x12ae29[_0x1f50a6 + _0x364620] = 0x0; } } _hrtfSpatialTensorMesh[_0x17c6f4(0x119)][_0x17c6f4(0x17a)] = !![]; } function _initBinauralSpectralConvolver(_0x19ba7a = 0x13880) { const _0x49bac7 = _0x2edc89; if (_hrtfSpatialTensorMesh) { scene[_0x49bac7(0x1e0)](_hrtfSpatialTensorMesh); if (_hrtfSpatialTensorMesh[_0x49bac7(0x204)]) _hrtfSpatialTensorMesh[_0x49bac7(0x204)][_0x49bac7(0x11e)](); if (_hrtfSpatialTensorMesh['material']) _hrtfSpatialTensorMesh[_0x49bac7(0x1d7)][_0x49bac7(0x11e)](); _hrtfSpatialTensorMesh = null; } if (_0x19ba7a <= 0x0) return; _spectralTapCapacity = _0x19ba7a, _currentResonantSectorX = null, _currentResonantSectorZ = null; const _0x1d1598 = _synthesizeDipoleResonanceRibbon(), _0x128adb = new THREE['MeshStandardMaterial']({ 'color': PAL[_0x49bac7(0x208)] || 0xf0c830, 'roughness': 0.7, 'metalness': 0.1, 'side': THREE[_0x49bac7(0x1ff)], 'shadowSide': THREE[_0x49bac7(0x1ff)] }); function _0xe76fff(_0x2a5938, _0x289f90 = ![]) { const _0x2cead1 = _0x49bac7; _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x173)] = _dspBiquadUniforms['uAudioEmitterNode'], _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x13c)] = _dspBiquadUniforms[_0x2cead1(0x13c)], _0x2a5938['uniforms']['uHeadOrientationVector'] = _dspBiquadUniforms[_0x2cead1(0x1c6)], _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x113)] = _dspBiquadUniforms[_0x2cead1(0x113)], _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x20f)] = _dspBiquadUniforms['uFundamentalModulationHz'], _0x2a5938[_0x2cead1(0x1b6)]['uNyquistDistanceHorizon'] = _dspBiquadUniforms[_0x2cead1(0x138)], _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x17f)] = _dspBiquadUniforms['uAcousticProximityFalloff'], _0x2a5938[_0x2cead1(0x21e)] = _0x2cead1(0x20d) + _0x2a5938[_0x2cead1(0x21e)]; const _0x44f1c8 = _0x289f90 ? '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(acousticTravelDistance\x20>\x201400.0)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20=\x200.0;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed\x20*=\x20psychoacousticAudibility;\x0a\x20\x20\x20\x20\x20\x20\x20\x20' : _0x2cead1(0x12d); _0x2a5938['vertexShader'] = _0x2a5938[_0x2cead1(0x21e)]['replace'](_0x2cead1(0x1c7), _0x2cead1(0x12c) + _0x44f1c8 + _0x2cead1(0x207)); } _0x128adb[_0x49bac7(0x1dc)] = function (_0x32f658) { _0xe76fff(_0x32f658, ![]); }, _hrtfSpatialTensorMesh = new THREE[(_0x49bac7(0x111))](_0x1d1598, _0x128adb, _0x19ba7a), _hrtfSpatialTensorMesh[_0x49bac7(0x1bf)] = !![], _hrtfSpatialTensorMesh['receiveShadow'] = !![]; const _0x4007c8 = new THREE[(_0x49bac7(0x169))]({ 'depthPacking': THREE['RGBADepthPacking'] }); _0x4007c8[_0x49bac7(0x1dc)] = function (_0x3231b7) { _0xe76fff(_0x3231b7, !![]); }, _hrtfSpatialTensorMesh[_0x49bac7(0x185)] = _0x4007c8, _shiftHarmonicPhaseMatrix(0x0, 0x0, 0x0, -0x1), scene['add'](_hrtfSpatialTensorMesh), console['log'](_0x49bac7(0x217) + _0x19ba7a + '\x20multi-pole\x20spatial\x20acoustic\x20delay\x20lines.'); } function _processBiquadHarmonicDSP(_0xdb96b3, _0x3fa5a5, _0x14463d, _0x2d6248, _0x25f16a) { const _0x303f8f = _0x2edc89; if (!_hrtfSpatialTensorMesh) return; const _0x3927cb = THREE[_0x303f8f(0x180)]['degToRad'](typeof camYawDeg !== 'undefined' ? camYawDeg : 0x0), _0x205241 = -Math['sin'](_0x3927cb), _0x495b49 = -Math[_0x303f8f(0x17e)](_0x3927cb), _0x5a0091 = typeof camera !== _0x303f8f(0x1e4) ? camera[_0x303f8f(0x1ad)]['x'] : _0xdb96b3, _0x3f0eae = typeof camera !== _0x303f8f(0x1e4) ? camera['position']['z'] : _0x14463d, _0x2ea4ad = THREE['MathUtils'][_0x303f8f(0x14a)](typeof camFov !== 'undefined' ? camFov : 0x2d), _0x3163b3 = typeof aspect !== _0x303f8f(0x1e4) ? aspect : window[_0x303f8f(0x110)] / window['innerHeight'], _0xd8300 = Math[_0x303f8f(0x122)](Math['tan'](_0x2ea4ad / 0x2) * _0x3163b3), _0x321d57 = Math[_0x303f8f(0x17e)](_0xd8300 + 0.1); _dspBiquadUniforms[_0x303f8f(0x13c)][_0x303f8f(0x120)][_0x303f8f(0x218)](_0x5a0091, 0x0, _0x3f0eae), _dspBiquadUniforms[_0x303f8f(0x1c6)]['value']['set'](_0x205241, 0x0, _0x495b49), _dspBiquadUniforms[_0x303f8f(0x113)][_0x303f8f(0x120)] = _0x321d57, _shiftHarmonicPhaseMatrix(_0x5a0091, _0x3f0eae, _0x205241, _0x495b49), _dspBiquadUniforms[_0x303f8f(0x173)][_0x303f8f(0x120)][_0x303f8f(0x218)](_0xdb96b3, _0x3fa5a5, _0x14463d), _dspBiquadUniforms[_0x303f8f(0x20f)][_0x303f8f(0x120)] = _0x25f16a, typeof maxVisDist !== 'undefined' && maxVisDist < 0x2710 ? _dspBiquadUniforms[_0x303f8f(0x138)][_0x303f8f(0x120)] = maxVisDist : _dspBiquadUniforms[_0x303f8f(0x138)][_0x303f8f(0x120)] = 0xaf0; } const createGrassLandscape = _initBinauralSpectralConvolver, updateGrassPhysics = _processBiquadHarmonicDSP, grassUniforms = _dspBiquadUniforms; createGrassLandscape(0x13880); let skyMesh = null, skyMaterial = null; const skyUniforms = { 'uSunDir': { 'value': new THREE[(_0x2edc89(0x146))](0x0, 0.44721, -0.89443) }, 'uColorHotCore': { 'value': new THREE[(_0x2edc89(0x13b))](0x1, 0x1, 0x1) }, 'uColorHotGlow': { 'value': new THREE[(_0x2edc89(0x13b))](0.78, 0.93, 0x1) }, 'uColorSun': { 'value': new THREE[(_0x2edc89(0x13b))](0.58, 0.82, 0.98) }, 'uColorHorizon': { 'value': new THREE[(_0x2edc89(0x13b))](0.35, 0.68, 0.92) }, 'uColorZenith': { 'value': new THREE['Color'](0.06, 0.16, 0.42) }, 'uTime': { 'value': 0x0 }, 'uCloudColor': { 'value': new THREE['Color'](0.96, 0.98, 0x1) }, 'uCloudShadowColor': { 'value': new THREE[(_0x2edc89(0x13b))](0.38, 0.5, 0.7) }, 'uCloudCoverage': { 'value': 0.42 } }; function initSky() { const _0x4f639e = _0x2edc89; if (skyMesh) return; const _0x4a8cc2 = new THREE[(_0x4f639e(0x18c))](0x36b0, 0x20, 0x10); skyMaterial = new THREE['ShaderMaterial']({ 'uniforms': skyUniforms, 'vertexShader': _0x4f639e(0x131), 'fragmentShader': _0x4f639e(0x1c4), 'side': THREE[_0x4f639e(0x19a)], 'depthWrite': ![] }), skyMesh = new THREE[(_0x4f639e(0x114))](_0x4a8cc2, skyMaterial), skyMesh[_0x4f639e(0x19e)] = -0x3e8, scene[_0x4f639e(0x152)](skyMesh); } function updateSky(_0xa6e5fe, _0x230a2d) { const _0x1e06a1 = _0x2edc89; !skyMesh && initSky(); if (skyMesh) { if (typeof _0x230a2d === 'number') skyUniforms[_0x1e06a1(0x1b5)][_0x1e06a1(0x120)] = _0x230a2d; else typeof clock !== _0x1e06a1(0x1e4) && (skyUniforms['uTime'][_0x1e06a1(0x120)] = clock[_0x1e06a1(0x1a2)]()); camera && skyMesh['position'][_0x1e06a1(0x15b)](camera[_0x1e06a1(0x1ad)]); if (typeof dirLight !== _0x1e06a1(0x1e4)) { const _0x1ff5e5 = new THREE[(_0x1e06a1(0x146))](0x0, 0x9c4, -0x1388)[_0x1e06a1(0x178)](); skyUniforms[_0x1e06a1(0x1ce)]['value'][_0x1e06a1(0x15b)](_0x1ff5e5); } } } const playerGroup = new THREE[(_0x2edc89(0x14d))](); scene[_0x2edc89(0x152)](playerGroup); const pShadow = new THREE[(_0x2edc89(0x114))](new THREE['CircleGeometry']((PLAYER_RADIUS + 0x4) * 0.5, 0x10), new THREE['MeshBasicMaterial']({ 'color': PAL[_0x2edc89(0x147)], 'transparent': !![], 'opacity': 0.5 })); pShadow[_0x2edc89(0x1a5)]['x'] = -Math['PI'] / 0x2, pShadow[_0x2edc89(0x1ad)]['y'] = 0.6, scene[_0x2edc89(0x152)](pShadow); let mixer = null, idleAction = null, walkAction = null, jumpAction = null, isWalking = ![], isGrounded = !![]; const animations = {}; let glbReady = ![]; const PLAYER_GLB = _0x2edc89(0x1cc), _loader = new THREE[(_0x2edc89(0x21f))](); _loader[_0x2edc89(0x118)](PLAYER_GLB, function (_0xd861ba) { const _0x5c069b = _0x2edc89, _0x151ea4 = _0xd861ba['scene'], _0x2f667e = new THREE['Box3']()[_0x5c069b(0x142)](_0x151ea4), _0x41d57a = new THREE[(_0x5c069b(0x146))](); _0x2f667e[_0x5c069b(0x1da)](_0x41d57a); if (_0x41d57a['y'] > 0x0) _0x151ea4[_0x5c069b(0x15d)][_0x5c069b(0x1b3)](PLAYER_HEIGHT / _0x41d57a['y']); _0x151ea4[_0x5c069b(0x206)](function (_0x53852e) { const _0x99c3de = _0x5c069b; _0x53852e['isMesh'] && (_0x53852e['castShadow'] = !![], _0x53852e[_0x99c3de(0x15f)] = !![]); }); const _0x490088 = new THREE[(_0x5c069b(0x10f))]()[_0x5c069b(0x142)](_0x151ea4); _0x151ea4[_0x5c069b(0x1ad)]['y'] = -_0x490088[_0x5c069b(0x1f2)]['y'] + 0x5, playerGroup[_0x5c069b(0x152)](_0x151ea4); const _0x4b0317 = [_0x5c069b(0x141), _0x5c069b(0x1ec), 'ponytail3', _0x5c069b(0x124), 'ponytail5']; window['ponytailBones'] = new Array(0x5)[_0x5c069b(0x19c)](null), _0x151ea4[_0x5c069b(0x206)](function (_0x47913f) { const _0x190c4b = _0x5c069b; if (_0x47913f[_0x190c4b(0x130)]) { const _0x158086 = _0x4b0317[_0x190c4b(0x14b)](_0x47913f['name'][_0x190c4b(0x1d1)]()); _0x158086 !== -0x1 && (_0x47913f['_restQuaternion'] = _0x47913f[_0x190c4b(0x181)][_0x190c4b(0x17d)](), window[_0x190c4b(0x18d)][_0x158086] = _0x47913f); } }), mixer = new THREE[(_0x5c069b(0x148))](_0x151ea4); if (_0xd861ba[_0x5c069b(0x1b7)] && _0xd861ba[_0x5c069b(0x1b7)][_0x5c069b(0x1b4)] > 0x0) { _0xd861ba[_0x5c069b(0x1b7)][_0x5c069b(0x194)](function (_0x5e9985) { const _0x1b193f = _0x5c069b, _0x4ea88f = mixer[_0x1b193f(0x21b)](_0x5e9985); _0x4ea88f[_0x1b193f(0x156)](THREE[_0x1b193f(0x200)]), animations[_0x5e9985[_0x1b193f(0x130)]['toLowerCase']()] = _0x4ea88f; }), idleAction = animations[_0x5c069b(0x112)] || Object[_0x5c069b(0x15a)](animations)[0x0], walkAction = animations[_0x5c069b(0x11a)] || null, jumpAction = animations['hero-jump'] || null; jumpAction && (jumpAction[_0x5c069b(0x156)](THREE[_0x5c069b(0x132)]), jumpAction[_0x5c069b(0x223)] = !![]); if (idleAction) idleAction[_0x5c069b(0x13a)](); } glbReady = !![], console[_0x5c069b(0x21d)](_0x5c069b(0x1f4)); }, function (_0x28b44c) { const _0x3e4016 = _0x2edc89; _0x28b44c[_0x3e4016(0x19b)] && console[_0x3e4016(0x21d)](_0x3e4016(0x16a) + Math[_0x3e4016(0x1a6)](_0x28b44c[_0x3e4016(0x157)] / _0x28b44c[_0x3e4016(0x19b)] * 0x64) + '%\x20loaded'); }, function (_0x38bb2d) { const _0x2721d3 = _0x2edc89; console[_0x2721d3(0x224)](_0x2721d3(0x188) + PLAYER_GLB + ':', _0x38bb2d); }), (function () { const _0x4cb12b = _0x2edc89; let _0x47dae9 = 0x0, _0x3c55f = 0x0, _0x125b97 = 0x0, _0x231587 = 0x0, _0x6ff8e1 = ![]; const _0x11e3fe = [0x0, 0x0, 0x0, 0x0, 0x0], _0x580647 = [0x0, 0x0, 0x0, 0x0, 0x0], _0x34c4e6 = [0x0, 0x0, 0x0, 0x0, 0x0], _0x401f21 = new THREE[(_0x4cb12b(0x219))](), _0x447f9b = new THREE[(_0x4cb12b(0x1cb))](0x0, 0x0, 0x0, _0x4cb12b(0x13f)); window[_0x4cb12b(0x209)] = function (_0x148bfd) { const _0x874515 = _0x4cb12b; if (!window[_0x874515(0x18d)] || window[_0x874515(0x18d)][_0x874515(0x1b4)] === 0x0 || !playerGroup) return; if (_0x148bfd <= 0x0) return; const _0x5ef4e6 = playerGroup['position']['x'], _0x550dd7 = playerGroup[_0x874515(0x1ad)]['y'], _0x45e9c7 = playerGroup['position']['z'], _0x5800f6 = playerGroup[_0x874515(0x1a5)]['y']; if (!_0x6ff8e1) { _0x47dae9 = _0x5ef4e6, _0x3c55f = _0x550dd7, _0x125b97 = _0x45e9c7, _0x231587 = _0x5800f6, _0x6ff8e1 = !![]; return; } const _0x5e17d7 = (_0x5ef4e6 - _0x47dae9) / _0x148bfd, _0x40510b = (_0x550dd7 - _0x3c55f) / _0x148bfd, _0xf7e722 = (_0x45e9c7 - _0x125b97) / _0x148bfd; let _0x2db5fa = _0x5800f6 - _0x231587; while (_0x2db5fa > Math['PI']) _0x2db5fa -= Math['PI'] * 0x2; while (_0x2db5fa < -Math['PI']) _0x2db5fa += Math['PI'] * 0x2; const _0x1908dd = _0x2db5fa / _0x148bfd; _0x47dae9 = _0x5ef4e6, _0x3c55f = _0x550dd7, _0x125b97 = _0x45e9c7, _0x231587 = _0x5800f6; const _0x42550c = Math[_0x874515(0x20a)](_0x5800f6), _0x551487 = Math[_0x874515(0x17e)](_0x5800f6), _0x3f4589 = -(_0x5e17d7 * _0x42550c + _0xf7e722 * _0x551487), _0x26e457 = _0x5e17d7 * _0x551487 - _0xf7e722 * _0x42550c, _0x3f2cb2 = THREE[_0x874515(0x180)][_0x874515(0x18b)](_0x3f4589 / PLAYER_SPEED, -0.5, 0x1), _0x29b00b = THREE['MathUtils'][_0x874515(0x18b)](_0x40510b * 0.0035, -0.15, 0.15), _0x1e133e = -_0x3f2cb2 * 0.55 - _0x29b00b, _0x42df22 = THREE[_0x874515(0x180)][_0x874515(0x18b)](-_0x26e457 / PLAYER_SPEED * 0.3 - _0x1908dd * 0.08, -0.35, 0.35), _0x5aefd0 = THREE[_0x874515(0x180)][_0x874515(0x18b)](-_0x1908dd * 0.1, -0.2, 0.2), _0x2d2591 = [0.05, 0.15, 1.1, 0.75, 0.9], _0x31f11b = 2.95, _0x3ec3cb = THREE[_0x874515(0x180)][_0x874515(0x14a)](0x73), _0x1ee63e = _0x3ec3cb / _0x31f11b, _0x4b555f = THREE['MathUtils']['clamp'](_0x1e133e, -_0x1ee63e, _0x1ee63e), _0x5e2982 = 0x6, _0x5bd738 = window[_0x874515(0x18d)]; for (let _0x369c71 = 0x0; _0x369c71 < 0x5; _0x369c71++) { const _0x2265b0 = _0x5bd738[_0x369c71]; if (!_0x2265b0) continue; const _0x205764 = _0x2d2591[_0x369c71], _0x40fc12 = _0x4b555f * _0x205764, _0x31fd35 = _0x42df22 * _0x205764, _0x117922 = _0x5aefd0 * _0x205764, _0x51d414 = 0x1 - Math[_0x874515(0x150)](-_0x5e2982 * _0x148bfd); _0x11e3fe[_0x369c71] += (_0x40fc12 - _0x11e3fe[_0x369c71]) * _0x51d414, _0x580647[_0x369c71] += (_0x31fd35 - _0x580647[_0x369c71]) * _0x51d414, _0x34c4e6[_0x369c71] += (_0x117922 - _0x34c4e6[_0x369c71]) * _0x51d414, _0x2265b0['_restQuaternion'] && _0x2265b0[_0x874515(0x181)][_0x874515(0x15b)](_0x2265b0[_0x874515(0x153)]), _0x447f9b[_0x874515(0x218)](_0x11e3fe[_0x369c71], _0x34c4e6[_0x369c71], _0x580647[_0x369c71], _0x874515(0x13f)), _0x401f21[_0x874515(0x1be)](_0x447f9b), _0x2265b0['quaternion']['multiply'](_0x401f21); } }; }()); const keys = { 'w': ![], 'a': ![], 's': ![], 'd': ![], 'space': ![] }; function _0x2ce1() { const _0xfa043c = ['PCFSoftShadowMap', 'CircleGeometry', 'baseY', 'devicePixelRatio', 'setAttribute', 'MeshDepthMaterial', '[player]\x20', 'Active\x20(Looping)', 'DirectionalLight', 'camera', 'removeEventListener', 'now', 'Scene', 'push', 'baseScale', 'uAudioEmitterNode', 'mousemove', '989001WCduxT', 'TorusGeometry', 'warn', 'normalize', 'update', 'needsUpdate', 'pow', '.perf-spike', 'clone', 'cos', 'uAcousticProximityFalloff', 'MathUtils', 'quaternion', 'blur', 'DodecahedronGeometry', 'function', 'customDepthMaterial', 'Click\x20to\x20enable\x20audio', 'getStats', '[player]\x20Failed\x20to\x20load\x20', '.perf-avg', 'avgMsEl', 'clamp', 'SphereGeometry', 'ponytailBones', 'setPixelRatio', 'volume', 'Audio\x20play\x20deferred\x20until\x20user\x20interaction:', 'ctrl-wind-mute', 'addEventListener', 'checked', 'forEach', '#888', 'floorNegZ', 'key', 'DOMContentLoaded', 'NONE', 'BackSide', 'total', 'fill', 'ms)', 'renderOrder', 'resetBaseline', 'AmbientLight', 'domElement', 'getElapsedTime', 'body', 'aspect', 'rotation', 'round', 'near', 'visible', 'touchstart', 'intersectsBox', 'updateMatrixWorld', '230642RxAOjI', 'position', 'speed', '14284584UGBZsH', 'bottom', 'then', 'ctrl-grass-density', 'setScalar', 'length', 'uTime', 'uniforms', 'animations', 'readyState', 'height', 'abs', 'right', 'initHUD', 'baselineAvgMs', 'setFromEuler', 'castShadow', 'setEffectiveTimeScale', 'WIND-SFX.mp3', 'target', 'max', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20varying\x20vec3\x20vWorldPos;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uSunDir;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorHotCore;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorHotGlow;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorSun;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorHorizon;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorZenith;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uTime;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uCloudColor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uCloudShadowColor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uCloudCoverage;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20hash2(vec2\x20p)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20p\x20=\x20vec2(dot(p,\x20vec2(127.1,\x20311.7)),\x20dot(p,\x20vec2(269.5,\x20183.3)));\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20return\x20-1.0\x20+\x202.0\x20*\x20fract(sin(p)\x20*\x2043758.5453123);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20noise2D(vec2\x20p)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20i\x20=\x20floor(p);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20f\x20=\x20fract(p);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20u\x20=\x20f\x20*\x20f\x20*\x20(3.0\x20-\x202.0\x20*\x20f);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20return\x20mix(mix(dot(hash2(i\x20+\x20vec2(0.0,\x200.0)),\x20f\x20-\x20vec2(0.0,\x200.0)),\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20dot(hash2(i\x20+\x20vec2(1.0,\x200.0)),\x20f\x20-\x20vec2(1.0,\x200.0)),\x20u.x),\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20mix(dot(hash2(i\x20+\x20vec2(0.0,\x201.0)),\x20f\x20-\x20vec2(0.0,\x201.0)),\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20dot(hash2(i\x20+\x20vec2(1.0,\x201.0)),\x20f\x20-\x20vec2(1.0,\x201.0)),\x20u.x),\x20u.y);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20fbm2D(vec2\x20p)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20val\x20=\x200.0;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20amp\x20=\x200.5;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20for\x20(int\x20i\x20=\x200;\x20i\x20<\x203;\x20i++)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20val\x20+=\x20amp\x20*\x20noise2D(p);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20p\x20*=\x202.02;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20amp\x20*=\x200.5;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20return\x20val;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20void\x20main()\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20dir\x20=\x20normalize(vWorldPos);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20height\x20=\x20clamp(dir.y,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20sunAlignment\x20=\x20max(0.0,\x20dot(dir,\x20uSunDir));\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20skyColor\x20=\x20mix(uColorHorizon,\x20uColorZenith,\x20pow(height,\x200.7));\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20sunAmbientGlow\x20=\x20pow(sunAlignment,\x202.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20uColorSun,\x20sunAmbientGlow\x20*\x200.75);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20hotGlowFactor\x20=\x20pow(sunAlignment,\x2064.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20uColorHotGlow,\x20hotGlowFactor\x20*\x200.95);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20hotCoreFactor\x20=\x20pow(sunAlignment,\x201024.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20uColorHotCore,\x20hotCoreFactor\x20*\x201.0);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(dir.y\x20>\x200.02)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20skyUV\x20=\x20dir.xz\x20/\x20(dir.y\x20+\x200.18);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20windDir\x20=\x20vec2(0.008,\x200.004)\x20*\x20uTime;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20samplePos\x20=\x20skyUV\x20*\x202.5\x20+\x20windDir;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20n\x20=\x20fbm2D(samplePos);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20n\x20=\x20n\x20*\x200.5\x20+\x200.5;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20cloudAlpha\x20=\x20smoothstep(uCloudCoverage,\x20uCloudCoverage\x20+\x200.28,\x20n);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20horizonFade\x20=\x20smoothstep(0.02,\x200.22,\x20dir.y);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20cloudAlpha\x20*=\x20horizonFade;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(cloudAlpha\x20>\x200.001)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20cloudHeightFactor\x20=\x20smoothstep(uCloudCoverage\x20+\x200.05,\x20uCloudCoverage\x20+\x200.35,\x20n);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20cColor\x20=\x20mix(uCloudShadowColor,\x20uCloudColor,\x20cloudHeightFactor);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20sunRim\x20=\x20pow(sunAlignment,\x204.0)\x20*\x20(1.0\x20-\x20cloudHeightFactor);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20cColor\x20=\x20mix(cColor,\x20uColorHotGlow,\x20sunRim\x20*\x200.8);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20cColor\x20=\x20mix(cColor,\x20uColorHotCore,\x20pow(sunAlignment,\x2012.0)\x20*\x200.5);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20cColor,\x20cloudAlpha\x20*\x200.88);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20gl_FragColor\x20=\x20vec4(skyColor,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'click', 'uHeadOrientationVector', '#include\x20<begin_vertex>', 'lerp', 'src', 'group', 'Euler', 'firstmodel.glb', '#camera-panel', 'uSunDir', 'enabled', 'left', 'toLowerCase', 'CylinderGeometry', 'setClearColor', 'preventDefault', 'btn-reset-baseline', '#c8ffc8', 'material', 'OctahedronGeometry', 'x:\x20', 'getSize', 'appendChild', 'onBeforeCompile', '#ffb050', 'box', 'requestPointerLock', 'remove', 'number', 'type', 'input', 'undefined', 'render', 'buffer', 'PerspectiveCamera', 'textContent', 'array', 'avgMs', 'obj', 'ponytail2', 'movementX', 'keyup', 'p99Ms', 'loading', '7682064DXnhFM', 'min', 'parent', '[player]\x20firstmodel.glb\x20ready.', 'Space', 'ctrl-wind-vol', 'change', '4hBLOLv', 'MeshStandardMaterial', 'mousedown', 'sort', 'BufferAttribute', 'getDelta', 'ctrl-player-speed', 'DoubleSide', 'LoopRepeat', 'record', '1677571vszLFZ', 'lookAt', 'geometry', 'toFixed', 'traverse', '\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20cantileverResonanceFactor\x20=\x20clamp(position.y\x20/\x2010.0,\x200.0,\x201.0);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20flutterEchoOffset\x20=\x20sin(uFundamentalModulationHz\x20*\x202.8\x20+\x20biquadWorldNode.x\x20*\x200.08\x20+\x20biquadWorldNode.z\x20*\x200.08)\x20*\x200.45\x20*\x20cantileverResonanceFactor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.x\x20+=\x20flutterEchoOffset;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(impulseSourceDistance\x20<\x20uAcousticProximityFalloff\x20&&\x20abs(biquadWorldNode.y\x20-\x20uAudioEmitterNode.y)\x20<\x2025.0)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20kineticWaveFront\x20=\x20normalize(biquadWorldNode.xz\x20-\x20uAudioEmitterNode.xz\x20+\x20vec2(0.0001));\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20dopplerShiftDeflection\x20=\x20(1.0\x20-\x20impulseSourceDistance\x20/\x20uAcousticProximityFalloff)\x20*\x204.5\x20*\x20cantileverResonanceFactor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.x\x20+=\x20kineticWaveFront.x\x20*\x20dopplerShiftDeflection;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.z\x20+=\x20kineticWaveFront.y\x20*\x20dopplerShiftDeflection;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.y\x20-=\x20dopplerShiftDeflection\x20*\x200.3;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'grass', 'updatePonytailPhysics', 'sin', 'diffEl', 'fadeOut', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20attribute\x20float\x20aOvertoneHarmonic;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uAudioEmitterNode;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uEarCanalOrigin;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uHeadOrientationVector;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uPsychoacousticDecayAngle;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uFundamentalModulationHz;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uNyquistDistanceHorizon;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uAcousticProximityFalloff;\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'reset', 'uFundamentalModulationHz', 'size', 'updateHUD', 'fpsEl', 'floor', 'index', 'fps', 'sqrt', '[HRTF-DSP]\x20Initialized\x20', 'set', 'Quaternion', 'code', 'clipAction', 'shadowMap', 'log', 'vertexShader', 'GLTFLoader', 'rings', 'oscAmp', 'pointerLockElement', 'clampWhenFinished', 'error', 'Box3', 'innerWidth', 'InstancedMesh', 'hero-idle', 'uPsychoacousticDecayAngle', 'Mesh', 'BufferGeometry', 'fadeIn', 'crystal', 'load', 'instanceMatrix', 'hero-walk', 'mesh', '#ui-overlay', 'space', 'dispose', 'innerHeight', 'value', 'setSize', 'atan', 'setIndex', 'ponytail4', 'isRunning', 'closest', '.perf-fps', 'WebGLRenderer', 'resize', '4874955wmzhjs', 'keydown', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#include\x20<begin_vertex>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#ifdef\x20USE_INSTANCING\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec4\x20biquadWorldNode\x20=\x20instanceMatrix\x20*\x20vec4(0.0,\x200.0,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#else\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec4\x20biquadWorldNode\x20=\x20modelMatrix\x20*\x20vec4(0.0,\x200.0,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#endif\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20interauralDelta\x20=\x20biquadWorldNode.xz\x20-\x20uEarCanalOrigin.xz;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20acousticTravelDistance\x20=\x20length(interauralDelta);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20impulseSourceDistance\x20=\x20length(biquadWorldNode.xz\x20-\x20uAudioEmitterNode.xz);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(aOvertoneHarmonic\x20>\x200.5)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20overtoneModulationGain\x20=\x20smoothstep(300.0,\x2050.0,\x20acousticTravelDistance);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20overtoneOrigin\x20=\x20vec3(1.8,\x200.0,\x201.8);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed\x20=\x20overtoneOrigin\x20+\x20(transformed\x20-\x20overtoneOrigin)\x20*\x20overtoneModulationGain;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20psychoacousticAudibility\x20=\x201.0;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(acousticTravelDistance\x20>\x2010.0)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20normalizedWavefront\x20=\x20interauralDelta\x20/\x20acousticTravelDistance;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20interauralPhaseCoherence\x20=\x20dot(normalizedWavefront,\x20uHeadOrientationVector.xz);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(interauralPhaseCoherence\x20<\x20uPsychoacousticDecayAngle)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20phaseDamping\x20=\x20clamp((interauralPhaseCoherence\x20-\x20(uPsychoacousticDecayAngle\x20-\x200.20))\x20/\x200.20,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20*=\x20phaseDamping;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(acousticTravelDistance\x20>\x20uNyquistDistanceHorizon)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20=\x200.0;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x20else\x20if\x20(acousticTravelDistance\x20>\x20uNyquistDistanceHorizon\x20*\x200.75)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20t\x20=\x20(acousticTravelDistance\x20-\x20uNyquistDistanceHorizon\x20*\x200.75)\x20/\x20(uNyquistDistanceHorizon\x20*\x200.25);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20*=\x20(1.0\x20-\x20smoothstep(0.0,\x201.0,\x20t));\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed\x20*=\x20psychoacousticAudibility;\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'frameCounter', 'movementY', 'name', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20varying\x20vec3\x20vWorldPos;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20void\x20main()\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vWorldPos\x20=\x20position;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec4\x20mvPosition\x20=\x20modelViewMatrix\x20*\x20vec4(position,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20gl_Position\x20=\x20projectionMatrix\x20*\x20mvPosition;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'LoopOnce', 'pointerdown', 'val-wind-vol', 'wind-sfx.mp3', 'setBaseline', 'time', 'uNyquistDistanceHorizon', 'floorPosZ', 'play', 'Color', 'uEarCanalOrigin', 'mouseup', 'SET\x20(', 'YXZ', 'style', 'ponytail1', 'setFromObject', 'hudEl', '6319288BUSQIS', 'catch', 'Vector3', 'shadow', 'AnimationMixer', 'spikeMsEl', 'degToRad', 'indexOf', 'getElementById', 'Group', '#5cf0a0', 'clientX', 'exp', 'btn-set-baseline', 'add', '_restQuaternion', '4lsjAut', 'color', 'setLoop', 'loaded', 'querySelector', '\x20\x20z:\x20', 'values', 'copy', 'val-player-speed', 'scale', 'mapSize', 'receiveShadow', 'Clock', 'opacity', 'count', 'clientY']; _0x2ce1 = function () { return _0xfa043c; }; return _0x2ce1(); } window[_0x2edc89(0x192)](_0x2edc89(0x12b), _0x4f4441 => { const _0x213524 = _0x2edc89; (_0x4f4441[_0x213524(0x21a)] === _0x213524(0x1f5) || _0x4f4441[_0x213524(0x197)] === '\x20') && (keys[_0x213524(0x11d)] = !![], _0x4f4441[_0x213524(0x1d4)]()); const _0x3736ed = _0x4f4441[_0x213524(0x197)][_0x213524(0x1d1)](); if (_0x3736ed in keys) keys[_0x3736ed] = !![]; }), window['addEventListener'](_0x2edc89(0x1ee), _0x28581c => { const _0x5763bb = _0x2edc89; (_0x28581c[_0x5763bb(0x21a)] === 'Space' || _0x28581c[_0x5763bb(0x197)] === '\x20') && (keys['space'] = ![], _0x28581c[_0x5763bb(0x1d4)]()); const _0xe0e5de = _0x28581c[_0x5763bb(0x197)][_0x5763bb(0x1d1)](); if (_0xe0e5de in keys) keys[_0xe0e5de] = ![]; }), window[_0x2edc89(0x192)](_0x2edc89(0x182), () => { const _0x49b5ce = _0x2edc89; keys['w'] = keys['a'] = keys['s'] = keys['d'] = keys[_0x49b5ce(0x11d)] = ![]; }); const _playerBox = new THREE[(_0x2edc89(0x10f))](); function _0x403a(_0x12088d, _0x5b9cfb) { _0x12088d = _0x12088d - 0x10f; const _0x2ce1c0 = _0x2ce1(); let _0x403ab0 = _0x2ce1c0[_0x12088d]; return _0x403ab0; } function getPlayerAABB(_0xa7cb13, _0x4b6fe7 = 0x0, _0x428f81 = 0x0) { const _0x6c0f8 = _0x2edc89; return _playerBox[_0x6c0f8(0x1f2)][_0x6c0f8(0x218)](_0xa7cb13 - PLAYER_RADIUS, _0x4b6fe7, _0x428f81 - PLAYER_RADIUS), _playerBox['max'][_0x6c0f8(0x218)](_0xa7cb13 + PLAYER_RADIUS, _0x4b6fe7 + PLAYER_HEIGHT, _0x428f81 + PLAYER_RADIUS), _playerBox; } function testCollision(_0x273d65, _0x2fdba5 = 0x0, _0x2a8702 = 0x0) { const _0x3d49ff = _0x2edc89, _0x5f2125 = getPlayerAABB(_0x273d65, _0x2fdba5, _0x2a8702), _0x2ff435 = 0.5; for (let _0x141bcc = 0x0; _0x141bcc < obstacles[_0x3d49ff(0x1b4)]; _0x141bcc++) { const _0x2c06f0 = obstacles[_0x141bcc][_0x3d49ff(0x1de)]; if (_0x2fdba5 >= _0x2c06f0[_0x3d49ff(0x1c3)]['y'] - _0x2ff435) continue; if (_0x5f2125[_0x3d49ff(0x1aa)](_0x2c06f0)) return !![]; } return ![]; } const WALK_FADE_IN = 0.18, WALK_FADE_OUT = 0.25, JUMP_LAUNCH_BLEND = 0.14, MIN_WALK_SPEED = 0x8, WALK_ANIM_SPEED_MULT = 1.35; let velX = 0x0, velY = 0x0, velZ = 0x0; function getGroundHeight(_0x480bea, _0x101c10, _0x4e9891 = PLAYER_RADIUS) { const _0x3f381f = _0x2edc89; let _0x4c59cd = 0x0; if (typeof obstacles !== _0x3f381f(0x1e4)) for (let _0x2659d5 = 0x0; _0x2659d5 < obstacles['length']; _0x2659d5++) { const _0x175217 = obstacles[_0x2659d5]['box']; _0x480bea + _0x4e9891 > _0x175217['min']['x'] && _0x480bea - _0x4e9891 < _0x175217[_0x3f381f(0x1c3)]['x'] && _0x101c10 + _0x4e9891 > _0x175217[_0x3f381f(0x1f2)]['z'] && _0x101c10 - _0x4e9891 < _0x175217[_0x3f381f(0x1c3)]['z'] && (_0x175217[_0x3f381f(0x1c3)]['y'] > _0x4c59cd && (_0x4c59cd = _0x175217['max']['y'])); } return _0x4c59cd; } function updatePlayerController(_0x1a640d) { const _0x3d7104 = _0x2edc89; if (mixer) mixer[_0x3d7104(0x179)](_0x1a640d); if (!glbReady) return; let _0x39c5c2 = (keys['d'] ? 0x1 : 0x0) - (keys['a'] ? 0x1 : 0x0), _0x326782 = (keys['s'] ? 0x1 : 0x0) - (keys['w'] ? 0x1 : 0x0); const _0x162af0 = THREE[_0x3d7104(0x180)]['degToRad'](camYawDeg || 0x0), _0x2069fd = _0x39c5c2 * Math['cos'](_0x162af0) + _0x326782 * Math[_0x3d7104(0x20a)](_0x162af0), _0x1d5fc9 = -_0x39c5c2 * Math[_0x3d7104(0x20a)](_0x162af0) + _0x326782 * Math[_0x3d7104(0x17e)](_0x162af0), _0x39224b = Math[_0x3d7104(0x216)](_0x2069fd * _0x2069fd + _0x1d5fc9 * _0x1d5fc9); let _0x2011d1 = 0x0, _0x5a4b03 = 0x0; _0x39224b > 0x0 && (_0x2011d1 = _0x2069fd / _0x39224b, _0x5a4b03 = _0x1d5fc9 / _0x39224b); const _0x15d638 = _0x2011d1 * PLAYER_SPEED, _0x5b1568 = _0x5a4b03 * PLAYER_SPEED; if (_0x39224b > 0x0) velX += (_0x15d638 - velX) * Math[_0x3d7104(0x1f2)](0x1, 0x10 * _0x1a640d), velZ += (_0x5b1568 - velZ) * Math[_0x3d7104(0x1f2)](0x1, 0x10 * _0x1a640d); else { velX += (0x0 - velX) * Math['min'](0x1, PLAYER_FRICTION * _0x1a640d), velZ += (0x0 - velZ) * Math[_0x3d7104(0x1f2)](0x1, PLAYER_FRICTION * _0x1a640d); if (Math['abs'](velX) < 0.1) velX = 0x0; if (Math[_0x3d7104(0x1ba)](velZ) < 0.1) velZ = 0x0; } let _0x2d2d85 = playerGroup['position']['x'], _0x153a6d = playerGroup[_0x3d7104(0x1ad)]['y'], _0x37481a = playerGroup[_0x3d7104(0x1ad)]['z']; const _0x41b921 = _0x2d2d85, _0x468041 = _0x37481a, _0x51d169 = velX * _0x1a640d, _0x59fe54 = velZ * _0x1a640d, _0x5505e7 = _0x2d2d85 + _0x51d169; !testCollision(_0x5505e7, _0x153a6d, _0x37481a) ? _0x2d2d85 = _0x5505e7 : velX = 0x0; const _0x475b6e = _0x37481a + _0x59fe54; !testCollision(_0x2d2d85, _0x153a6d, _0x475b6e) ? _0x37481a = _0x475b6e : velZ = 0x0; const _0x16da65 = getGroundHeight(_0x2d2d85, _0x37481a); let _0x504444 = ![]; if (keys['space'] && isGrounded) { isGrounded = ![], velY = JUMP_POWER; if (idleAction) idleAction[_0x3d7104(0x20c)](JUMP_LAUNCH_BLEND); if (walkAction) walkAction[_0x3d7104(0x20c)](JUMP_LAUNCH_BLEND); jumpAction && (jumpAction[_0x3d7104(0x20e)](), jumpAction[_0x3d7104(0x137)] = 0x0, jumpAction[_0x3d7104(0x1c0)](0x1), jumpAction[_0x3d7104(0x1cf)] = !![], jumpAction['fadeIn'](JUMP_LAUNCH_BLEND), jumpAction[_0x3d7104(0x13a)]()); } if (!isGrounded) { velY -= JUMP_GRAVITY * _0x1a640d, _0x153a6d += velY * _0x1a640d; jumpAction && (velY < 0x0 ? jumpAction[_0x3d7104(0x1c0)](1.75) : jumpAction[_0x3d7104(0x1c0)](0x1)); if (velY < 0x0 && jumpAction && !jumpAction[_0x3d7104(0x125)]()) { jumpAction[_0x3d7104(0x20e)](), jumpAction[_0x3d7104(0x137)] = 0.833, jumpAction['enabled'] = !![], jumpAction[_0x3d7104(0x1c0)](1.75), jumpAction['play'](); if (idleAction) idleAction[_0x3d7104(0x20c)](0.1); if (walkAction) walkAction[_0x3d7104(0x20c)](0.1); } jumpAction && jumpAction[_0x3d7104(0x125)]() && (jumpAction[_0x3d7104(0x137)] >= 1.55 && (jumpAction[_0x3d7104(0x137)] = 1.55)), _0x153a6d <= _0x16da65 && (_0x153a6d = _0x16da65, velY = 0x0, isGrounded = !![], _0x504444 = !![], jumpAction && (jumpAction[_0x3d7104(0x1c0)](0x1), jumpAction[_0x3d7104(0x137)] = 1.6667, jumpAction[_0x3d7104(0x20c)](0.3))); } else _0x153a6d > _0x16da65 + 0.1 ? (isGrounded = ![], velY = 0x0) : _0x153a6d = _0x16da65; playerGroup['position']['set'](_0x2d2d85, _0x153a6d, _0x37481a), pShadow[_0x3d7104(0x1ad)][_0x3d7104(0x218)](_0x2d2d85, _0x16da65 + 0.6, _0x37481a); const _0x35658d = Math[_0x3d7104(0x1c3)](0x0, _0x153a6d - _0x16da65), _0xe0e032 = THREE[_0x3d7104(0x180)][_0x3d7104(0x18b)](0x1 - _0x35658d / 0x46 * 0.45, 0.55, 0x1); pShadow[_0x3d7104(0x15d)][_0x3d7104(0x218)](_0xe0e032, _0xe0e032, 0x1), pShadow[_0x3d7104(0x1d7)][_0x3d7104(0x161)] = THREE[_0x3d7104(0x180)][_0x3d7104(0x18b)](0.5 - _0x35658d / 0x46 * 0.25, 0.25, 0.5); const _0x3d5537 = _0x2d2d85 - _0x41b921, _0x45cb14 = _0x37481a - _0x468041, _0x22d345 = Math[_0x3d7104(0x216)](_0x3d5537 * _0x3d5537 + _0x45cb14 * _0x45cb14) / Math[_0x3d7104(0x1c3)](_0x1a640d, 0.0001), _0x444e51 = _0x22d345 > MIN_WALK_SPEED; if (_0x444e51 || _0x39224b > 0x0) { const _0xf8cce7 = Math[_0x3d7104(0x1ba)](_0x3d5537) > 0.01 ? _0x3d5537 : _0x2011d1, _0x36f821 = Math[_0x3d7104(0x1ba)](_0x45cb14) > 0.01 ? _0x45cb14 : _0x5a4b03; if (_0xf8cce7 !== 0x0 || _0x36f821 !== 0x0) { const _0x3fe3f0 = Math['atan2'](_0xf8cce7, _0x36f821); let _0xd4262 = _0x3fe3f0 - playerGroup[_0x3d7104(0x1a5)]['y']; while (_0xd4262 > Math['PI']) _0xd4262 -= Math['PI'] * 0x2; while (_0xd4262 < -Math['PI']) _0xd4262 += Math['PI'] * 0x2; playerGroup['rotation']['y'] += _0xd4262 * Math['min'](0x1, 0xe * _0x1a640d); } } if (isGrounded) { if (_0x504444) { if (_0x444e51) { if (idleAction) idleAction['fadeOut'](WALK_FADE_IN); if (walkAction) walkAction['reset']()[_0x3d7104(0x116)](WALK_FADE_IN)['play'](); isWalking = !![]; } else { if (walkAction) walkAction[_0x3d7104(0x20c)](WALK_FADE_OUT); if (idleAction) idleAction['reset']()[_0x3d7104(0x116)](WALK_FADE_OUT)['play'](); isWalking = ![]; } } else { if (_0x444e51 && !isWalking) { if (idleAction) idleAction[_0x3d7104(0x20c)](WALK_FADE_IN); if (walkAction) walkAction[_0x3d7104(0x20e)]()[_0x3d7104(0x116)](WALK_FADE_IN)[_0x3d7104(0x13a)](); isWalking = !![]; } else { if (!_0x444e51 && isWalking) { if (walkAction) walkAction[_0x3d7104(0x20c)](WALK_FADE_OUT); if (idleAction) idleAction['reset']()[_0x3d7104(0x116)](WALK_FADE_OUT)['play'](); isWalking = ![]; } } } } if (walkAction && isWalking && isGrounded) { const _0x5e1c9c = THREE[_0x3d7104(0x180)][_0x3d7104(0x18b)](_0x22d345 / PLAYER_SPEED * WALK_ANIM_SPEED_MULT, 0.5, 1.7); walkAction[_0x3d7104(0x1c0)](_0x5e1c9c); } typeof updatePonytailPhysics === _0x3d7104(0x184) && updatePonytailPhysics(_0x1a640d); } window[_0x2edc89(0x192)](_0x2edc89(0x129), () => { const _0x5d60ea = _0x2edc89; aspect = window[_0x5d60ea(0x110)] / window[_0x5d60ea(0x11f)], camera && (camera[_0x5d60ea(0x1a4)] = aspect, camera['updateProjectionMatrix']()), renderer['setSize'](window[_0x5d60ea(0x110)], window[_0x5d60ea(0x11f)]); }); const ctrlGrassDensity = document[_0x2edc89(0x14c)](_0x2edc89(0x1b2)); ctrlGrassDensity && ctrlGrassDensity[_0x2edc89(0x192)](_0x2edc89(0x1f7), () => { const _0x5a89c7 = _0x2edc89, _0x555d08 = parseInt(ctrlGrassDensity[_0x5a89c7(0x120)], 0xa); typeof createGrassLandscape === _0x5a89c7(0x184) && createGrassLandscape(_0x555d08); }); const ctrlPlayerSpeed = document[_0x2edc89(0x14c)](_0x2edc89(0x1fe)), valPlayerSpeed = document[_0x2edc89(0x14c)](_0x2edc89(0x15c)); ctrlPlayerSpeed && valPlayerSpeed && ctrlPlayerSpeed[_0x2edc89(0x192)](_0x2edc89(0x1e3), _0x4e7dd2 => { const _0x462b7c = _0x2edc89; PLAYER_SPEED = parseFloat(_0x4e7dd2['target']['value']), valPlayerSpeed[_0x462b7c(0x1e8)] = Math['round'](PLAYER_SPEED); }); let isDragging = ![], previousMouseX = 0x0, previousMouseY = 0x0; renderer[_0x2edc89(0x1a1)][_0x2edc89(0x192)](_0x2edc89(0x1c5), _0x494c04 => { const _0x3ad01a = _0x2edc89; if (_0x494c04[_0x3ad01a(0x1c2)][_0x3ad01a(0x126)](_0x3ad01a(0x1cd)) || _0x494c04['target'][_0x3ad01a(0x126)](_0x3ad01a(0x11c))) return; document[_0x3ad01a(0x222)] !== renderer[_0x3ad01a(0x1a1)] && renderer['domElement'][_0x3ad01a(0x1df)](); }), window[_0x2edc89(0x192)](_0x2edc89(0x1fa), _0x266e82 => { const _0x14605e = _0x2edc89; if (_0x266e82[_0x14605e(0x1c2)]['closest'](_0x14605e(0x1cd)) || _0x266e82[_0x14605e(0x1c2)][_0x14605e(0x126)](_0x14605e(0x11c))) return; isDragging = !![], previousMouseX = _0x266e82[_0x14605e(0x14f)], previousMouseY = _0x266e82['clientY']; }), window[_0x2edc89(0x192)](_0x2edc89(0x174), _0x4e000a => { const _0x1576a3 = _0x2edc89; let _0x21c178 = 0x0, _0x4147e7 = 0x0; if (document[_0x1576a3(0x222)] === renderer[_0x1576a3(0x1a1)]) _0x21c178 = _0x4e000a[_0x1576a3(0x1ed)], _0x4147e7 = _0x4e000a[_0x1576a3(0x12f)]; else { if (isDragging) _0x21c178 = _0x4e000a[_0x1576a3(0x14f)] - previousMouseX, _0x4147e7 = _0x4e000a[_0x1576a3(0x163)] - previousMouseY, previousMouseX = _0x4e000a['clientX'], previousMouseY = _0x4e000a[_0x1576a3(0x163)]; else return; } camYawDeg = (camYawDeg - _0x21c178 * 0.35) % 0x168; if (camYawDeg < 0x0) camYawDeg += 0x168; camAngleDeg = THREE[_0x1576a3(0x180)][_0x1576a3(0x18b)](camAngleDeg - _0x4147e7 * 0.25, 0x5, 0x87); }), window[_0x2edc89(0x192)](_0x2edc89(0x13d), () => { isDragging = ![]; }), initCamera(); const clock = new THREE[(_0x2edc89(0x160))](), coordsEl = document[_0x2edc89(0x14c)]('coords'); function animate() { const _0x1768aa = _0x2edc89; requestAnimationFrame(animate); const _0x1e5a76 = performance['now'](), _0x1b0724 = Math[_0x1768aa(0x1f2)](clock[_0x1768aa(0x1fd)](), 0.05), _0x474346 = clock['elapsedTime']; updatePlayerController(_0x1b0724); const _0x508a0c = playerGroup[_0x1768aa(0x1ad)]['x'], _0x1ddaeb = playerGroup[_0x1768aa(0x1ad)]['y'], _0x391fd6 = playerGroup[_0x1768aa(0x1ad)]['z']; typeof floor !== _0x1768aa(0x1e4) && (floor[_0x1768aa(0x1ad)]['x'] = _0x508a0c, floor[_0x1768aa(0x1ad)]['z'] = _0x391fd6); typeof updateHorizonDisplacement === _0x1768aa(0x184) && updateHorizonDisplacement(_0x508a0c, _0x391fd6, _0x1ddaeb); if (typeof animatedMonuments !== _0x1768aa(0x1e4) && animatedMonuments[_0x1768aa(0x1b4)] > 0x0) { const _0x483cf0 = 0x2710 * 0x2710; for (let _0x3ab0e8 = 0x0; _0x3ab0e8 < animatedMonuments[_0x1768aa(0x1b4)]; _0x3ab0e8++) { const _0x23c7cf = animatedMonuments[_0x3ab0e8]; if (!_0x23c7cf['group'] || !_0x23c7cf['group'][_0x1768aa(0x1a8)]) continue; const _0x5d7826 = _0x23c7cf[_0x1768aa(0x1ca)]['position']['x'] - _0x508a0c, _0x230463 = _0x23c7cf[_0x1768aa(0x1ca)][_0x1768aa(0x1ad)]['z'] - _0x391fd6; if (_0x5d7826 * _0x5d7826 + _0x230463 * _0x230463 > _0x483cf0) continue; _0x23c7cf[_0x1768aa(0x117)] && (_0x23c7cf[_0x1768aa(0x117)][_0x1768aa(0x1a5)]['y'] += 0.8 * _0x1b0724); if (_0x23c7cf['rings']) for (let _0x4895eb = 0x0; _0x4895eb < _0x23c7cf[_0x1768aa(0x220)][_0x1768aa(0x1b4)]; _0x4895eb++) { const _0x34b087 = _0x23c7cf[_0x1768aa(0x220)][_0x4895eb]; _0x34b087[_0x1768aa(0x11b)]['rotation']['z'] += _0x34b087[_0x1768aa(0x1ae)] * _0x1b0724, _0x34b087[_0x1768aa(0x11b)][_0x1768aa(0x1ad)]['y'] = _0x34b087[_0x1768aa(0x166)] + Math[_0x1768aa(0x20a)](_0x474346 * 2.2 + _0x4895eb * 1.5 + _0x3ab0e8) * _0x34b087[_0x1768aa(0x221)]; } } } typeof updateGrassPhysics === _0x1768aa(0x184) && updateGrassPhysics(_0x508a0c, _0x1ddaeb, _0x391fd6, _0x1b0724, _0x474346); const _0x2ef555 = 0x50, _0x3c8864 = Math['min'](camAngleDeg, _0x2ef555), _0x3fbbab = THREE[_0x1768aa(0x180)]['degToRad'](_0x3c8864), _0x5bcf64 = THREE['MathUtils']['degToRad'](camYawDeg || 0x0), _0x3581fe = camHeight * Math[_0x1768aa(0x20a)](_0x3fbbab), _0x2d66ef = camHeight * Math[_0x1768aa(0x17e)](_0x3fbbab), _0x4d3c70 = _0x3581fe * Math[_0x1768aa(0x20a)](_0x5bcf64), _0x56518d = _0x3581fe * Math[_0x1768aa(0x17e)](_0x5bcf64); camera[_0x1768aa(0x1ad)]['x'] = _0x508a0c + _0x4d3c70, camera['position']['y'] = _0x1ddaeb + _0x2d66ef, camera[_0x1768aa(0x1ad)]['z'] = _0x391fd6 + _0x56518d; let _0x1fe7bb = _0x1ddaeb + 0xc; if (camAngleDeg > _0x2ef555) { const _0x4c4384 = THREE['MathUtils'][_0x1768aa(0x14a)](camAngleDeg - _0x2ef555); _0x1fe7bb += camHeight * Math['tan'](_0x4c4384); } camera[_0x1768aa(0x203)](_0x508a0c, _0x1fe7bb, _0x391fd6); typeof updateSky === _0x1768aa(0x184) && updateSky(_0x1b0724, _0x474346); const _0x4071c3 = dirLight['shadow'][_0x1768aa(0x16d)][_0x1768aa(0x1bb)] - dirLight[_0x1768aa(0x147)]['camera'][_0x1768aa(0x1d0)], _0x3d529b = _0x4071c3 / dirLight[_0x1768aa(0x147)][_0x1768aa(0x15e)]['width'], _0x5a9145 = Math['floor'](_0x508a0c / _0x3d529b) * _0x3d529b, _0x4fb30f = Math['floor'](_0x391fd6 / _0x3d529b) * _0x3d529b, _0x37efdd = 0x0; dirLight[_0x1768aa(0x1ad)][_0x1768aa(0x218)](_0x5a9145, 0x9c4, _0x4fb30f - 0x1388), dirLight[_0x1768aa(0x1c2)][_0x1768aa(0x1ad)][_0x1768aa(0x218)](_0x5a9145, _0x37efdd, _0x4fb30f), dirLight[_0x1768aa(0x1c2)][_0x1768aa(0x1ab)](); if (typeof obstacles !== 'undefined' && obstacles[_0x1768aa(0x1b4)] > 0x0) { const _0x5ac56a = 0xa8c * 0xa8c; for (let _0x49f76c = 0x0; _0x49f76c < obstacles[_0x1768aa(0x1b4)]; _0x49f76c++) { const _0x514a8a = obstacles[_0x49f76c]; if (_0x514a8a && _0x514a8a[_0x1768aa(0x11b)]) { const _0x4caf55 = _0x514a8a[_0x1768aa(0x11b)][_0x1768aa(0x1f3)] ? _0x514a8a[_0x1768aa(0x11b)][_0x1768aa(0x1f3)][_0x1768aa(0x1ad)] : _0x514a8a[_0x1768aa(0x11b)]['position'], _0x58eb23 = _0x4caf55['x'] - _0x508a0c, _0x3daf89 = _0x4caf55['z'] - _0x391fd6; _0x514a8a['mesh'][_0x1768aa(0x1bf)] = _0x58eb23 * _0x58eb23 + _0x3daf89 * _0x3daf89 <= _0x5ac56a; } } } coordsEl[_0x1768aa(0x1e8)] = _0x1768aa(0x1d9) + Math[_0x1768aa(0x1a6)](_0x508a0c) + _0x1768aa(0x159) + Math[_0x1768aa(0x1a6)](_0x391fd6), renderer[_0x1768aa(0x1e5)](scene, camera), typeof perfMonitor !== _0x1768aa(0x1e4) && perfMonitor[_0x1768aa(0x201)](performance[_0x1768aa(0x16f)]() - _0x1e5a76); } animate();
+const _0x2edc89 = _0x403a;
+(function (_0x471f74, _0xa50b5a) {
+    const _0x3e268d = _0x403a
+        , _0x23522b = _0x471f74();
+    while (!![]) {
+        try {
+            const _0x5e5922 = parseInt(_0x3e268d(0x1ac)) / 0x1 * (parseInt(_0x3e268d(0x1f8)) / 0x2) + parseInt(_0x3e268d(0x175)) / 0x3 + -parseInt(_0x3e268d(0x154)) / 0x4 * (parseInt(_0x3e268d(0x12a)) / 0x5) + -parseInt(_0x3e268d(0x1f1)) / 0x6 + -parseInt(_0x3e268d(0x202)) / 0x7 + parseInt(_0x3e268d(0x144)) / 0x8 + parseInt(_0x3e268d(0x1af)) / 0x9;
+            if (_0x5e5922 === _0xa50b5a)
+                break;
+            else
+                _0x23522b['push'](_0x23522b['shift']());
+        } catch (_0x5b1e04) {
+            _0x23522b['push'](_0x23522b['shift']());
+        }
+    }
+}(_0x2ce1, 0xa451a));
+const WORLD_WIDTH = 0x1388
+    , WORLD_DEPTH = 0x1388
+    , WORLD_RADIUS = WORLD_WIDTH / 0x2
+    , HALF_WIDTH = WORLD_WIDTH / 0x2
+    , HALF_DEPTH = WORLD_DEPTH / 0x2;
+let PLAYER_SPEED = 0x78;
+const PLAYER_ACCEL = 0x4b0
+    , PLAYER_FRICTION = 0x10
+    , PLAYER_RADIUS = 0xa
+    , PLAYER_HEIGHT = 0x18
+    , JUMP_POWER = 0x78
+    , JUMP_GRAVITY = 0xb4;
+let maxVisDist = 0x1869f
+    , HORIZON_SINK_START = 0xdac
+    , HORIZON_SINK_END = 0x3e80
+    , HORIZON_MAX_SINK = 0x168
+    , HORIZON_MIN_SCALE = 0x0
+    , camAngleDeg = 0x4b
+    , camYawDeg = 0xb4
+    , camHeight = 0x96
+    , camFov = 0x32;
+const PAL = {
+    'bg': 0x1a1a2e,
+    'floorPosZ': 0xfff04f,
+    'floorNegZ': 0x665105,
+    'grass': 0xf0c830,
+    'shadow': 0xe0e1a
+};
+class PerformanceBuffer {
+    constructor(_0x446e4f = 0x78) {
+        const _0x4a13fc = _0x403a;
+        this[_0x4a13fc(0x210)] = _0x446e4f,
+            this['buffer'] = new Float32Array(_0x446e4f),
+            this[_0x4a13fc(0x214)] = 0x0,
+            this[_0x4a13fc(0x162)] = 0x0,
+            this['hudEl'] = null,
+            this[_0x4a13fc(0x212)] = null,
+            this[_0x4a13fc(0x18a)] = null,
+            this['spikeMsEl'] = null,
+            this[_0x4a13fc(0x20b)] = null,
+            this['updateInterval'] = 0xa,
+            this['frameCounter'] = 0x0,
+            this[_0x4a13fc(0x1bd)] = null;
+    }
+    [_0x2edc89(0x1bc)](_0x3c9724 = 'perf-hud') {
+        const _0x42755d = _0x2edc89;
+        this['hudEl'] = document[_0x42755d(0x14c)](_0x3c9724);
+        if (this[_0x42755d(0x143)]) {
+            this[_0x42755d(0x212)] = this[_0x42755d(0x143)][_0x42755d(0x158)](_0x42755d(0x127)),
+                this[_0x42755d(0x18a)] = this[_0x42755d(0x143)][_0x42755d(0x158)](_0x42755d(0x189)),
+                this['spikeMsEl'] = this[_0x42755d(0x143)][_0x42755d(0x158)](_0x42755d(0x17c)),
+                this[_0x42755d(0x20b)] = this['hudEl'][_0x42755d(0x158)]('.perf-diff');
+            const _0x47d36f = document[_0x42755d(0x14c)](_0x42755d(0x151));
+            if (_0x47d36f)
+                _0x47d36f[_0x42755d(0x192)]('click', () => this[_0x42755d(0x136)]());
+            const _0x1e515b = document['getElementById'](_0x42755d(0x1d5));
+            if (_0x1e515b)
+                _0x1e515b['addEventListener']('click', () => this[_0x42755d(0x19f)]());
+        }
+    }
+    ['record'](_0x201f84) {
+        const _0x4864cd = _0x2edc89;
+        this[_0x4864cd(0x1e6)][this[_0x4864cd(0x214)]] = _0x201f84,
+            this[_0x4864cd(0x214)] = (this[_0x4864cd(0x214)] + 0x1) % this[_0x4864cd(0x210)];
+        if (this[_0x4864cd(0x162)] < this[_0x4864cd(0x210)])
+            this[_0x4864cd(0x162)]++;
+        this[_0x4864cd(0x12e)]++,
+            this[_0x4864cd(0x12e)] >= this['updateInterval'] && (this[_0x4864cd(0x12e)] = 0x0,
+                this[_0x4864cd(0x211)]());
+    }
+    [_0x2edc89(0x187)]() {
+        const _0x227396 = _0x2edc89;
+        if (this[_0x227396(0x162)] === 0x0)
+            return {
+                'fps': 0x0,
+                'avgMs': 0x0,
+                'maxMs': 0x0,
+                'minMs': 0x0,
+                'p99Ms': 0x0
+            };
+        let _0x3b50e7 = 0x0
+            , _0x1d58f0 = 0x0
+            , _0x4fb861 = Infinity;
+        const _0x3a954d = new Float32Array(this[_0x227396(0x162)]);
+        for (let _0x415822 = 0x0; _0x415822 < this[_0x227396(0x162)]; _0x415822++) {
+            const _0x3e41c7 = this[_0x227396(0x1e6)][_0x415822];
+            _0x3b50e7 += _0x3e41c7,
+                _0x3a954d[_0x415822] = _0x3e41c7;
+            if (_0x3e41c7 > _0x1d58f0)
+                _0x1d58f0 = _0x3e41c7;
+            if (_0x3e41c7 < _0x4fb861)
+                _0x4fb861 = _0x3e41c7;
+        }
+        const _0x3d23b7 = _0x3b50e7 / this[_0x227396(0x162)]
+            , _0x40a824 = _0x3d23b7 > 0x0 ? 0x3e8 / _0x3d23b7 : 0x0;
+        _0x3a954d[_0x227396(0x1fb)]();
+        const _0x30f6f5 = Math[_0x227396(0x1f2)](Math['floor'](this[_0x227396(0x162)] * 0.99), this[_0x227396(0x162)] - 0x1)
+            , _0xfe04fa = _0x3a954d[_0x30f6f5];
+        return {
+            'fps': _0x40a824,
+            'avgMs': _0x3d23b7,
+            'maxMs': _0x1d58f0,
+            'minMs': _0x4fb861,
+            'p99Ms': _0xfe04fa
+        };
+    }
+    ['setBaseline']() {
+        const _0x2e9aae = _0x2edc89
+            , _0x747e92 = this['getStats']();
+        this[_0x2e9aae(0x1bd)] = _0x747e92['avgMs'],
+            this[_0x2e9aae(0x20b)] && (this[_0x2e9aae(0x20b)][_0x2e9aae(0x1e8)] = _0x2e9aae(0x13e) + this[_0x2e9aae(0x1bd)][_0x2e9aae(0x205)](0x1) + _0x2e9aae(0x19d),
+                this['diffEl'][_0x2e9aae(0x140)]['color'] = _0x2e9aae(0x14e));
+    }
+    ['resetBaseline']() {
+        const _0x283140 = _0x2edc89;
+        this['baselineAvgMs'] = null,
+            this[_0x283140(0x20b)] && (this['diffEl'][_0x283140(0x1e8)] = _0x283140(0x199),
+                this[_0x283140(0x20b)][_0x283140(0x140)][_0x283140(0x155)] = _0x283140(0x195));
+    }
+    [_0x2edc89(0x211)]() {
+        const _0x3af90e = _0x2edc89;
+        if (!this[_0x3af90e(0x143)])
+            this[_0x3af90e(0x1bc)]();
+        if (!this['hudEl'])
+            return;
+        const _0x541168 = this['getStats']();
+        if (this['fpsEl'])
+            this[_0x3af90e(0x212)][_0x3af90e(0x1e8)] = Math[_0x3af90e(0x1a6)](_0x541168[_0x3af90e(0x215)]);
+        if (this[_0x3af90e(0x18a)])
+            this['avgMsEl'][_0x3af90e(0x1e8)] = _0x541168[_0x3af90e(0x1ea)]['toFixed'](0x1) + 'ms';
+        if (this['spikeMsEl'])
+            this[_0x3af90e(0x149)]['textContent'] = _0x541168[_0x3af90e(0x1ef)][_0x3af90e(0x205)](0x1) + 'ms';
+        if (this[_0x3af90e(0x20b)]) {
+            if (this[_0x3af90e(0x1bd)] !== null) {
+                const _0x202279 = _0x541168[_0x3af90e(0x1ea)] - this[_0x3af90e(0x1bd)]
+                    , _0x248b42 = _0x202279 >= 0x0 ? '+' : '';
+                this[_0x3af90e(0x20b)]['textContent'] = '' + _0x248b42 + _0x202279[_0x3af90e(0x205)](0x2) + 'ms';
+                if (_0x202279 > 0x1)
+                    this[_0x3af90e(0x20b)]['style'][_0x3af90e(0x155)] = '#ff6b6b';
+                else
+                    _0x202279 < -0.5 ? this['diffEl'][_0x3af90e(0x140)]['color'] = _0x3af90e(0x14e) : this['diffEl'][_0x3af90e(0x140)][_0x3af90e(0x155)] = _0x3af90e(0x1d6);
+            } else
+                this['diffEl'][_0x3af90e(0x1e8)] = '--',
+                    this['diffEl'][_0x3af90e(0x140)][_0x3af90e(0x155)] = _0x3af90e(0x195);
+        }
+    }
+}
+const perfMonitor = new PerformanceBuffer(0x78);
+let windAudio = null
+    , isAudioInitialized = ![]
+    , windVolume = 0.05
+    , isMuted = ![];
+function initAudio() {
+    const _0x10171c = _0x2edc89;
+    if (windAudio)
+        return;
+    windAudio = new Audio('WIND-SFX.mp3'),
+        windAudio['loop'] = !![],
+        windAudio[_0x10171c(0x18f)] = isMuted ? 0x0 : windVolume,
+        windAudio[_0x10171c(0x192)](_0x10171c(0x224), () => {
+            const _0x534b97 = _0x10171c;
+            if (windAudio[_0x534b97(0x1c9)]['includes'](_0x534b97(0x1c1))) {
+                windAudio[_0x534b97(0x1c9)] = _0x534b97(0x135);
+                if (isAudioInitialized && !isMuted)
+                    windAudio[_0x534b97(0x13a)]();
+            }
+        }
+        );
+    const _0x33b42d = () => {
+        const _0x9be963 = _0x10171c;
+        if (!windAudio)
+            return;
+        windAudio[_0x9be963(0x13a)]()[_0x9be963(0x1b1)](() => {
+            isAudioInitialized = !![],
+                updateAudioUI();
+        }
+        )[_0x9be963(0x145)](_0x3c2714 => {
+            const _0x34bc1f = _0x9be963;
+            console[_0x34bc1f(0x177)](_0x34bc1f(0x190), _0x3c2714);
+        }
+        ),
+            window[_0x9be963(0x16e)](_0x9be963(0x133), _0x33b42d),
+            window[_0x9be963(0x16e)](_0x9be963(0x12b), _0x33b42d),
+            window[_0x9be963(0x16e)](_0x9be963(0x1a9), _0x33b42d);
+    }
+        ;
+    window[_0x10171c(0x192)](_0x10171c(0x133), _0x33b42d),
+        window['addEventListener']('keydown', _0x33b42d),
+        window['addEventListener']('touchstart', _0x33b42d),
+        setupAudioControls();
+}
+function setupAudioControls() {
+    const _0x5754a3 = _0x2edc89
+        , _0x47a3bd = document[_0x5754a3(0x14c)](_0x5754a3(0x1f6))
+        , _0x517467 = document['getElementById'](_0x5754a3(0x134))
+        , _0x39d13f = document[_0x5754a3(0x14c)](_0x5754a3(0x191));
+    _0x47a3bd && _0x517467 && _0x47a3bd[_0x5754a3(0x192)](_0x5754a3(0x1e3), _0x409bf9 => {
+        const _0x8473e2 = _0x5754a3;
+        windVolume = parseFloat(_0x409bf9[_0x8473e2(0x1c2)][_0x8473e2(0x120)]),
+            _0x517467[_0x8473e2(0x1e8)] = Math[_0x8473e2(0x1a6)](windVolume * 0x64) + '%',
+            windAudio && !isMuted && (windAudio[_0x8473e2(0x18f)] = windVolume);
+    }
+    ),
+        _0x39d13f && _0x39d13f['addEventListener'](_0x5754a3(0x1f7), _0xcbe4e9 => {
+            const _0x282946 = _0x5754a3;
+            isMuted = _0xcbe4e9[_0x282946(0x1c2)][_0x282946(0x193)],
+                windAudio && (windAudio[_0x282946(0x18f)] = isMuted ? 0x0 : windVolume);
+        }
+        );
+}
+function updateAudioUI() {
+    const _0x4a10b6 = _0x2edc89
+        , _0x4424be = document[_0x4a10b6(0x14c)]('wind-audio-status');
+    _0x4424be && (_0x4424be[_0x4a10b6(0x1e8)] = isAudioInitialized ? _0x4a10b6(0x16b) : _0x4a10b6(0x186),
+        _0x4424be[_0x4a10b6(0x140)][_0x4a10b6(0x155)] = isAudioInitialized ? _0x4a10b6(0x14e) : _0x4a10b6(0x1dd));
+}
+console.log(
+    '%c' +
+    '  ___                         \n' +
+    ' / __| __ _ _ __  _____ __ __ _ \n' +
+    ' \\__ \\/ _` | \'  \\/ _ \\ V  V / \  \\\n' +
+    ' |___/\\__,_|_|_|_\\___/\\_/\\_/|_||_|\n' +
+    '──────────────────────────────────\n' +
+    ' Open for creative collaborations!\n' +
+    ' CHeck out more of my work: https://samown.com\n',
+    'color: #e2d700ff; font-family: monospace; font-size: 11px; line-height: 1.3; font-weight: bold;'
+);
+document[_0x2edc89(0x1b8)] === _0x2edc89(0x1f0) ? document[_0x2edc89(0x192)](_0x2edc89(0x198), initAudio) : initAudio();
+const renderer = new THREE[(_0x2edc89(0x128))]({
+    'antialias': !![]
+});
+renderer[_0x2edc89(0x18e)](Math[_0x2edc89(0x1f2)](window[_0x2edc89(0x167)], 0x2)),
+    renderer[_0x2edc89(0x121)](window[_0x2edc89(0x110)], window[_0x2edc89(0x11f)]),
+    renderer[_0x2edc89(0x1d3)](PAL['bg']),
+    renderer['shadowMap'][_0x2edc89(0x1cf)] = !![],
+    renderer[_0x2edc89(0x21c)][_0x2edc89(0x1e2)] = THREE[_0x2edc89(0x164)],
+    document[_0x2edc89(0x1a3)][_0x2edc89(0x1db)](renderer[_0x2edc89(0x1a1)]);
+const scene = new THREE[(_0x2edc89(0x170))]()
+    , ambientLight = new THREE[(_0x2edc89(0x1a0))](0xffffff, 0.6);
+scene['add'](ambientLight);
+const dirLight = new THREE[(_0x2edc89(0x16c))](0xffffff, 0.85);
+dirLight['position'][_0x2edc89(0x218)](0x0, 0x9c4, -0x1388),
+    dirLight[_0x2edc89(0x1bf)] = !![],
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x15e)]['width'] = 0x800,
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x15e)][_0x2edc89(0x1b9)] = 0x800,
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)][_0x2edc89(0x1d0)] = -0x7d0,
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)][_0x2edc89(0x1bb)] = 0x7d0,
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)]['top'] = 0x7d0,
+    dirLight['shadow'][_0x2edc89(0x16d)][_0x2edc89(0x1b0)] = -0x7d0,
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)][_0x2edc89(0x1a7)] = 0x64,
+    dirLight[_0x2edc89(0x147)][_0x2edc89(0x16d)]['far'] = 0x2328,
+    dirLight['shadow']['bias'] = -0.0002,
+    dirLight[_0x2edc89(0x147)]['camera']['updateProjectionMatrix'](),
+    scene[_0x2edc89(0x152)](dirLight),
+    scene[_0x2edc89(0x152)](dirLight[_0x2edc89(0x1c2)]);
+let aspect = window[_0x2edc89(0x110)] / window[_0x2edc89(0x11f)], camera;
+function initCamera() {
+    const _0x29c6ad = _0x2edc89;
+    camera = new THREE[(_0x29c6ad(0x1e7))](camFov, aspect, 0xa, 0x3e80);
+}
+const horizonTrackedObjects = [];
+function registerHorizonObject(_0x1ec984, _0x27bf78 = null, _0x3a8b6f = null) {
+    const _0x3f3286 = _0x2edc89;
+    if (!_0x1ec984)
+        return;
+    const _0x1f0652 = _0x27bf78 !== null ? typeof _0x27bf78 === _0x3f3286(0x1e1) ? new THREE['Vector3'](_0x27bf78, _0x27bf78, _0x27bf78) : _0x27bf78['clone']() : _0x1ec984[_0x3f3286(0x15d)][_0x3f3286(0x17d)]()
+        , _0xeae243 = _0x3a8b6f !== null ? _0x3a8b6f : _0x1ec984[_0x3f3286(0x1ad)]['y'];
+    horizonTrackedObjects[_0x3f3286(0x171)]({
+        'obj': _0x1ec984,
+        'baseScale': _0x1f0652,
+        'baseY': _0xeae243
+    });
+}
+function updateHorizonDisplacement(_0x345629, _0x141acb, _0x2b89fd = 0x0) {
+    const _0x42d98f = _0x2edc89;
+    if (horizonTrackedObjects[_0x42d98f(0x1b4)] === 0x0)
+        return;
+    const _0x15f0fa = Math[_0x42d98f(0x1c3)](0x1, HORIZON_SINK_END - HORIZON_SINK_START)
+        , _0x3d1bd7 = typeof getGroundHeight === 'function' ? getGroundHeight(_0x345629, _0x141acb) : 0x0
+        , _0x46d4ef = Math[_0x42d98f(0x1c3)](0x0, _0x2b89fd - _0x3d1bd7);
+    for (let _0x4ba2f7 = 0x0; _0x4ba2f7 < horizonTrackedObjects[_0x42d98f(0x1b4)]; _0x4ba2f7++) {
+        const _0x2dae98 = horizonTrackedObjects[_0x4ba2f7]
+            , _0x1a2b3e = _0x2dae98[_0x42d98f(0x1eb)]
+            , _0x502f25 = _0x1a2b3e[_0x42d98f(0x1ad)]['x']
+            , _0x1adaaa = _0x1a2b3e[_0x42d98f(0x1ad)]['z']
+            , _0x14ecf5 = _0x502f25 - _0x345629
+            , _0x470bac = _0x1adaaa - _0x141acb
+            , _0x2787b7 = Math[_0x42d98f(0x216)](_0x14ecf5 * _0x14ecf5 + _0x470bac * _0x470bac);
+        if (_0x2787b7 <= HORIZON_SINK_START)
+            _0x1a2b3e[_0x42d98f(0x15d)][_0x42d98f(0x15b)](_0x2dae98[_0x42d98f(0x172)]),
+                _0x1a2b3e[_0x42d98f(0x1ad)]['y'] = _0x2dae98['baseY'],
+                _0x1a2b3e[_0x42d98f(0x1a8)] = !![];
+        else {
+            const _0x333e48 = Math[_0x42d98f(0x1f2)](0x1, (_0x2787b7 - HORIZON_SINK_START) / _0x15f0fa)
+                , _0x5e432f = THREE[_0x42d98f(0x180)][_0x42d98f(0x1c8)](0x1, HORIZON_MIN_SCALE, _0x333e48)
+                , _0x3c4339 = Math[_0x42d98f(0x17b)](_0x333e48, 0.9) * HORIZON_MAX_SINK
+                , _0x383f58 = _0x46d4ef * Math['pow'](_0x333e48, 1.2) * 0x5;
+            _0x5e432f <= 0.001 ? _0x1a2b3e['visible'] = ![] : (_0x1a2b3e[_0x42d98f(0x1a8)] = !![],
+                _0x1a2b3e[_0x42d98f(0x15d)][_0x42d98f(0x218)](_0x2dae98[_0x42d98f(0x172)]['x'] * _0x5e432f, _0x2dae98['baseScale']['y'] * _0x5e432f, _0x2dae98[_0x42d98f(0x172)]['z'] * _0x5e432f),
+                _0x1a2b3e[_0x42d98f(0x1ad)]['y'] = _0x2dae98[_0x42d98f(0x166)] - _0x3c4339 - _0x383f58);
+        }
+    }
+}
+const floorGeo = new THREE[(_0x2edc89(0x165))](WORLD_RADIUS, 0x80)
+    , colorPos = new THREE[(_0x2edc89(0x13b))](PAL[_0x2edc89(0x139)])
+    , colorNeg = new THREE[(_0x2edc89(0x13b))](PAL[_0x2edc89(0x196)])
+    , posAttr = floorGeo['attributes'][_0x2edc89(0x1ad)]
+    , floorColors = new Float32Array(posAttr[_0x2edc89(0x162)] * 0x3)
+    , _tempColor = new THREE[(_0x2edc89(0x13b))]();
+for (let i = 0x0; i < posAttr['count']; i++) {
+    const ly = posAttr['getY'](i)
+        , t = Math[_0x2edc89(0x1c3)](0x0, Math[_0x2edc89(0x1f2)](0x1, 0.5 - ly / (WORLD_RADIUS * 0x2)));
+    _tempColor[_0x2edc89(0x15b)](colorNeg)['lerp'](colorPos, t),
+        floorColors[i * 0x3] = _tempColor['r'],
+        floorColors[i * 0x3 + 0x1] = _tempColor['g'],
+        floorColors[i * 0x3 + 0x2] = _tempColor['b'];
+}
+floorGeo[_0x2edc89(0x168)](_0x2edc89(0x155), new THREE[(_0x2edc89(0x1fc))](floorColors, 0x3));
+const floorMat = new THREE[(_0x2edc89(0x1f9))]({
+    'vertexColors': !![],
+    'roughness': 0.8,
+    'metalness': 0.1,
+    'side': THREE[_0x2edc89(0x1ff)]
+})
+    , floor = new THREE['Mesh'](floorGeo, floorMat);
+floor[_0x2edc89(0x1a5)]['x'] = -Math['PI'] / 0x2,
+    floor[_0x2edc89(0x1ad)]['y'] = 0x0,
+    floor[_0x2edc89(0x15f)] = !![],
+    scene[_0x2edc89(0x152)](floor);
+const obstacles = []
+    , animatedMonuments = [];
+function createTallMonolith(_0x259dd8, _0x2aa798) {
+    const _0x35ec38 = _0x2edc89
+        , _0x42be90 = new THREE[(_0x35ec38(0x14d))]()
+        , _0x16dac7 = new THREE['MeshStandardMaterial']({
+            'color': 0x2b2d3d,
+            'roughness': 0.9,
+            'metalness': 0.1,
+            'flatShading': !![]
+        })
+        , _0xb9e9e7 = new THREE[(_0x35ec38(0x1d2))](0x8c, 0xb4, 0x28, 0x8)
+        , _0x4c1f9d = new THREE['Mesh'](_0xb9e9e7, _0x16dac7);
+    _0x4c1f9d[_0x35ec38(0x1ad)]['y'] = 0x14,
+        _0x4c1f9d[_0x35ec38(0x1bf)] = !![],
+        _0x4c1f9d[_0x35ec38(0x15f)] = !![],
+        _0x42be90['add'](_0x4c1f9d);
+    const _0x114075 = 0x8;
+    for (let _0x587660 = 0x0; _0x587660 < _0x114075; _0x587660++) {
+        const _0x55129f = _0x587660 / _0x114075 * Math['PI'] * 0x2 + (_0x587660 % 0x2 === 0x0 ? 0.2 : -0.1)
+            , _0x589e2d = 0x82 + _0x587660 % 0x3 * 0x19
+            , _0x17e92f = Math['cos'](_0x55129f) * _0x589e2d
+            , _0x5c63e6 = Math[_0x35ec38(0x20a)](_0x55129f) * _0x589e2d
+            , _0x1d44f7 = new THREE[(_0x35ec38(0x183))](0x23 + _0x587660 % 0x4 * 0xc, 0x0)
+            , _0x36a49b = new THREE[(_0x35ec38(0x114))](_0x1d44f7, _0x16dac7);
+        _0x36a49b['position'][_0x35ec38(0x218)](_0x17e92f, 0x12 + _0x587660 % 0x2 * 0x8, _0x5c63e6),
+            _0x36a49b['rotation'][_0x35ec38(0x218)](_0x587660 * 0.7 % 1.5, _0x587660 * 1.3 % 3.14, _0x587660 * 0.9 % 1.2),
+            _0x36a49b[_0x35ec38(0x15d)][_0x35ec38(0x218)](0x1 + _0x587660 % 0x3 * 0.4, 1.2 + _0x587660 % 0x2 * 0.6, 0.9 + _0x587660 % 0x4 * 0.3),
+            _0x36a49b['castShadow'] = !![],
+            _0x36a49b['receiveShadow'] = !![],
+            _0x42be90[_0x35ec38(0x152)](_0x36a49b);
+    }
+    const _0x2eec0b = new THREE[(_0x35ec38(0x1d2))](0x5f, 0x7d, 0x23, 0x8)
+        , _0x1133a0 = new THREE[(_0x35ec38(0x114))](_0x2eec0b, _0x16dac7);
+    _0x1133a0[_0x35ec38(0x1ad)]['y'] = 0x32,
+        _0x1133a0['castShadow'] = !![],
+        _0x1133a0[_0x35ec38(0x15f)] = !![],
+        _0x42be90[_0x35ec38(0x152)](_0x1133a0);
+    const _0x2881b8 = new THREE[(_0x35ec38(0x1d2))](0x28, 0x4b, 0x1cc, 0x8)
+        , _0x2d9040 = new THREE[(_0x35ec38(0x1f9))]({
+            'color': 0x4d3e58,
+            'emissive': 0x1a2e47,
+            'emissiveIntensity': 0.5,
+            'roughness': 0.6,
+            'flatShading': !![]
+        })
+        , _0x56e141 = new THREE[(_0x35ec38(0x114))](_0x2881b8, _0x2d9040);
+    _0x56e141[_0x35ec38(0x1ad)]['y'] = 0x41 + 0xe6,
+        _0x56e141[_0x35ec38(0x1bf)] = !![],
+        _0x56e141['receiveShadow'] = !![],
+        _0x42be90[_0x35ec38(0x152)](_0x56e141);
+    const _0x55d458 = new THREE[(_0x35ec38(0x1d2))](0x12, 0x12, 0x1e0, 0x8)
+        , _0x339a63 = new THREE[(_0x35ec38(0x1f9))]({
+            'color': 0xe1ff,
+            'emissive': 0xb4ff,
+            'emissiveIntensity': 1.6,
+            'roughness': 0.15
+        })
+        , _0x4f6cac = new THREE[(_0x35ec38(0x114))](_0x55d458, _0x339a63);
+    _0x4f6cac[_0x35ec38(0x1ad)]['y'] = 0x41 + 0xf0,
+        _0x42be90[_0x35ec38(0x152)](_0x4f6cac);
+    const _0x1ba92d = new THREE[(_0x35ec38(0x1d8))](0x2d, 0x0)
+        , _0x3e328d = new THREE['MeshStandardMaterial']({
+            'color': 0x70f0ff,
+            'emissive': 0xc8ff,
+            'emissiveIntensity': 1.2,
+            'roughness': 0.15,
+            'metalness': 0.3,
+            'flatShading': !![]
+        })
+        , _0x1daa9c = new THREE[(_0x35ec38(0x114))](_0x1ba92d, _0x3e328d);
+    _0x1daa9c[_0x35ec38(0x1ad)]['y'] = 0x41 + 0x1cc + 0x41,
+        _0x1daa9c[_0x35ec38(0x15d)][_0x35ec38(0x218)](0x1, 1.8, 0x1),
+        _0x1daa9c[_0x35ec38(0x1bf)] = !![],
+        _0x42be90[_0x35ec38(0x152)](_0x1daa9c);
+    const _0x54ec3d = [];
+    function _0x51db24(_0x31aa88, _0x5c5328, _0x4916f, _0x390f01, _0x3f599d, _0x8de883, _0x4f8e2b) {
+        const _0x285ec4 = _0x35ec38
+            , _0x49359c = new THREE[(_0x285ec4(0x176))](_0x31aa88, _0x5c5328, 0x8, 0x14)
+            , _0x58a71f = new THREE['MeshStandardMaterial']({
+                'color': _0x390f01,
+                'emissive': _0x3f599d,
+                'emissiveIntensity': 0x2,
+                'roughness': 0.1
+            })
+            , _0x2e74a7 = new THREE[(_0x285ec4(0x114))](_0x49359c, _0x58a71f);
+        _0x2e74a7[_0x285ec4(0x1a5)]['x'] = Math['PI'] / 0x2,
+            _0x2e74a7['position']['y'] = _0x4916f,
+            _0x42be90[_0x285ec4(0x152)](_0x2e74a7),
+            _0x54ec3d[_0x285ec4(0x171)]({
+                'mesh': _0x2e74a7,
+                'baseY': _0x4916f,
+                'speed': _0x8de883,
+                'oscAmp': _0x4f8e2b
+            });
+    }
+    _0x51db24(0x4e, 0x6, 0x41 + 0xa0, 0xaaff, 0x88ff, -0.6, 0xa),
+        _0x51db24(0x3e, 0x7, 0x41 + 0x136, 0xf0ff, 0xd0ff, 0.9, 0xe),
+        _0x51db24(0x2e, 0x5, 0x41 + 0x1ae, 0x80f5ff, 0xe1ff, -1.2, 0x8),
+        _0x42be90[_0x35ec38(0x15d)][_0x35ec38(0x218)](0x3, 0x3, 0x3),
+        _0x42be90[_0x35ec38(0x1ad)][_0x35ec38(0x218)](_0x259dd8, 0x0, _0x2aa798),
+        scene[_0x35ec38(0x152)](_0x42be90),
+        animatedMonuments['push']({
+            'group': _0x42be90,
+            'crystal': _0x1daa9c,
+            'rings': _0x54ec3d
+        }),
+        _0x42be90[_0x35ec38(0x1ab)](!![]);
+    const _0x70962f = new THREE[(_0x35ec38(0x10f))]()[_0x35ec38(0x142)](_0x4c1f9d);
+    obstacles[_0x35ec38(0x171)]({
+        'mesh': _0x4c1f9d,
+        'box': _0x70962f
+    }),
+        typeof registerHorizonObject === _0x35ec38(0x184) && registerHorizonObject(_0x42be90);
+}
+function spawnMonumentGrid() {
+    const _0x3f5d43 = [{
+        'x': 0x0,
+        'z': -0xbb8
+    }, {
+        'x': 0x1770,
+        'z': 0x1770
+    }, {
+        'x': -0x1770,
+        'z': 0x1770
+    }, {
+        'x': 0x2ee0,
+        'z': -0x2ee0
+    }, {
+        'x': -0x2ee0,
+        'z': -0x2ee0
+    }, {
+        'x': 0x0,
+        'z': 0x2ee0
+    }, {
+        'x': -0x36b0,
+        'z': 0x0
+    }, {
+        'x': 0x36b0,
+        'z': 0x0
+    }];
+    _0x3f5d43['forEach'](_0x5d0f2a => createTallMonolith(_0x5d0f2a['x'], _0x5d0f2a['z']));
+}
+spawnMonumentGrid();
+let _hrtfSpatialTensorMesh = null
+    , _spectralTapCapacity = 0x13880;
+const _ACOUSTIC_OCTAVE_STRIDE = 0x190
+    , _HESSIAN_RADIAL_DEPTH = 0x5
+    , _FOURIER_MATRIX_DIM = _HESSIAN_RADIAL_DEPTH * 0x2 + 0x1
+    , _TOTAL_HARMONIC_CELLS = _FOURIER_MATRIX_DIM * _FOURIER_MATRIX_DIM;
+let _currentResonantSectorX = null
+    , _currentResonantSectorZ = null;
+const _dspBiquadUniforms = {
+    'uAudioEmitterNode': {
+        'value': new THREE[(_0x2edc89(0x146))](0x0, -0x3e7, 0x0)
+    },
+    'uEarCanalOrigin': {
+        'value': new THREE[(_0x2edc89(0x146))](0x0, 0x0, 0x0)
+    },
+    'uHeadOrientationVector': {
+        'value': new THREE[(_0x2edc89(0x146))](0x0, 0x0, -0x1)
+    },
+    'uPsychoacousticDecayAngle': {
+        'value': 0.1
+    },
+    'uFundamentalModulationHz': {
+        'value': 0x0
+    },
+    'uNyquistDistanceHorizon': {
+        'value': 0xaf0
+    },
+    'uAcousticProximityFalloff': {
+        'value': 0x18
+    }
+};
+function _pseudoWhitenoiseGenerator(_0x5cac49, _0x5a2754, _0x33e156, _0x2b5e70 = 0x0) {
+    const _0x15839a = _0x2edc89
+        , _0x372340 = Math['sin'](_0x5cac49 * 12.9898 + _0x5a2754 * 78.233 + _0x33e156 * 43758.5453 + _0x2b5e70 * 19.19) * 43758.5453;
+    return _0x372340 - Math[_0x15839a(0x213)](_0x372340);
+}
+function _synthesizeDipoleResonanceRibbon() {
+    const _0x50592a = _0x2edc89
+        , _0x28f9c3 = 2.2
+        , _0x1c84be = 0xa
+        , _0x3ac5f9 = 0.25
+        , _0x1b0254 = _0x28f9c3 / 0x2
+        , _0x33f59e = _0x1b0254 * _0x3ac5f9
+        , _0x146d07 = 1.8
+        , _0x2abd54 = 1.8
+        , _0x4f6d07 = new Float32Array([-_0x1b0254, 0x0, 0x0, _0x1b0254, 0x0, 0x0, -_0x33f59e, _0x1c84be, 0x0, _0x33f59e, _0x1c84be, 0x0, 0x0, 0x0, -_0x1b0254, 0x0, 0x0, _0x1b0254, 0x0, _0x1c84be, -_0x33f59e, 0x0, _0x1c84be, _0x33f59e, _0x146d07 - _0x1b0254, 0x0, _0x2abd54, _0x146d07 + _0x1b0254, 0x0, _0x2abd54, _0x146d07 - _0x33f59e, _0x1c84be, _0x2abd54, _0x146d07 + _0x33f59e, _0x1c84be, _0x2abd54, _0x146d07, 0x0, _0x2abd54 - _0x1b0254, _0x146d07, 0x0, _0x2abd54 + _0x1b0254, _0x146d07, _0x1c84be, _0x2abd54 - _0x33f59e, _0x146d07, _0x1c84be, _0x2abd54 + _0x33f59e])
+        , _0x360b03 = [0x0, 0x1, 0x2, 0x2, 0x1, 0x3, 0x4, 0x5, 0x6, 0x6, 0x5, 0x7, 0x8, 0x9, 0xa, 0xa, 0x9, 0xb, 0xc, 0xd, 0xe, 0xe, 0xd, 0xf]
+        , _0x21eb3f = new Float32Array([0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1])
+        , _0x51e596 = new THREE[(_0x50592a(0x115))]();
+    return _0x51e596['setAttribute']('position', new THREE[(_0x50592a(0x1fc))](_0x4f6d07, 0x3)),
+        _0x51e596[_0x50592a(0x168)]('aOvertoneHarmonic', new THREE[(_0x50592a(0x1fc))](_0x21eb3f, 0x1)),
+        _0x51e596[_0x50592a(0x123)](_0x360b03),
+        _0x51e596['computeVertexNormals'](),
+        _0x51e596;
+}
+function _convolveSpectralFrequencyBin(_0x3feb4c, _0x5f09bb, _0x11c587, _0x1ab24d) {
+    const _0x41dc7e = _0x2edc89
+        , _0x295a55 = _0x3feb4c * _ACOUSTIC_OCTAVE_STRIDE - _ACOUSTIC_OCTAVE_STRIDE / 0x2
+        , _0x4ad45f = _0x5f09bb * _ACOUSTIC_OCTAVE_STRIDE - _ACOUSTIC_OCTAVE_STRIDE / 0x2
+        , _0x1b60fa = _hrtfSpatialTensorMesh[_0x41dc7e(0x119)]['array'];
+    for (let _0x1331e8 = 0x0; _0x1331e8 < _0x1ab24d; _0x1331e8++) {
+        const _0x418483 = _0x11c587 + _0x1331e8;
+        if (_0x418483 >= _spectralTapCapacity)
+            break;
+        const _0x3e6d11 = _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x1) * _ACOUSTIC_OCTAVE_STRIDE
+            , _0x4bf36f = _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x2) * _ACOUSTIC_OCTAVE_STRIDE
+            , _0x1866cd = _0x295a55 + _0x3e6d11
+            , _0x213528 = _0x4ad45f + _0x4bf36f
+            , _0x59550f = typeof getGroundHeight === _0x41dc7e(0x184) ? getGroundHeight(_0x1866cd, _0x213528) : 0x0
+            , _0x2a4ce5 = _0x59550f > 0x5 ? 0x0 : _0x59550f
+            , _0x1134d7 = _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x3) * Math['PI'] * 0x2
+            , _0x596db9 = 0.85 + _pseudoWhitenoiseGenerator(_0x3feb4c, _0x5f09bb, _0x1331e8, 0x4) * 1.55
+            , _0x59f073 = Math[_0x41dc7e(0x17e)](_0x1134d7) * _0x596db9
+            , _0x1b7cb7 = Math['sin'](_0x1134d7) * _0x596db9
+            , _0x46c9aa = _0x418483 * 0x10;
+        _0x1b60fa[_0x46c9aa] = _0x59f073,
+            _0x1b60fa[_0x46c9aa + 0x1] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0x2] = -_0x1b7cb7,
+            _0x1b60fa[_0x46c9aa + 0x3] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0x4] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0x5] = _0x596db9,
+            _0x1b60fa[_0x46c9aa + 0x6] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0x7] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0x8] = _0x1b7cb7,
+            _0x1b60fa[_0x46c9aa + 0x9] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0xa] = _0x59f073,
+            _0x1b60fa[_0x46c9aa + 0xb] = 0x0,
+            _0x1b60fa[_0x46c9aa + 0xc] = _0x1866cd,
+            _0x1b60fa[_0x46c9aa + 0xd] = _0x2a4ce5,
+            _0x1b60fa[_0x46c9aa + 0xe] = _0x213528,
+            _0x1b60fa[_0x46c9aa + 0xf] = 0x1;
+    }
+}
+function _shiftHarmonicPhaseMatrix(_0xb53363, _0x3fae71, _0x14c0ff = 0x0, _0x27c732 = -0x1) {
+    const _0x17c6f4 = _0x2edc89;
+    if (!_hrtfSpatialTensorMesh)
+        return;
+    const _0x8384e3 = _0xb53363 + _0x14c0ff * (_ACOUSTIC_OCTAVE_STRIDE * 1.5)
+        , _0x5e451c = _0x3fae71 + _0x27c732 * (_ACOUSTIC_OCTAVE_STRIDE * 1.5)
+        , _0x2d3b7a = Math[_0x17c6f4(0x213)]((_0x8384e3 + _ACOUSTIC_OCTAVE_STRIDE / 0x2) / _ACOUSTIC_OCTAVE_STRIDE)
+        , _0x470f41 = Math[_0x17c6f4(0x213)]((_0x5e451c + _ACOUSTIC_OCTAVE_STRIDE / 0x2) / _ACOUSTIC_OCTAVE_STRIDE);
+    if (_0x2d3b7a === _currentResonantSectorX && _0x470f41 === _currentResonantSectorZ)
+        return;
+    _currentResonantSectorX = _0x2d3b7a,
+        _currentResonantSectorZ = _0x470f41;
+    const _0xc1a099 = Math[_0x17c6f4(0x213)](_spectralTapCapacity / _TOTAL_HARMONIC_CELLS);
+    let _0x432e27 = 0x0;
+    const _0x12ae29 = _hrtfSpatialTensorMesh[_0x17c6f4(0x119)][_0x17c6f4(0x1e9)];
+    for (let _0x5da4a7 = _0x2d3b7a - _HESSIAN_RADIAL_DEPTH; _0x5da4a7 <= _0x2d3b7a + _HESSIAN_RADIAL_DEPTH; _0x5da4a7++) {
+        for (let _0xf8acf8 = _0x470f41 - _HESSIAN_RADIAL_DEPTH; _0xf8acf8 <= _0x470f41 + _HESSIAN_RADIAL_DEPTH; _0xf8acf8++) {
+            _convolveSpectralFrequencyBin(_0x5da4a7, _0xf8acf8, _0x432e27, _0xc1a099),
+                _0x432e27 += _0xc1a099;
+        }
+    }
+    for (let _0x1a8bc4 = _0x432e27; _0x1a8bc4 < _spectralTapCapacity; _0x1a8bc4++) {
+        const _0x1f50a6 = _0x1a8bc4 * 0x10;
+        for (let _0x364620 = 0x0; _0x364620 < 0x10; _0x364620++) {
+            _0x12ae29[_0x1f50a6 + _0x364620] = 0x0;
+        }
+    }
+    _hrtfSpatialTensorMesh[_0x17c6f4(0x119)][_0x17c6f4(0x17a)] = !![];
+}
+function _initBinauralSpectralConvolver(_0x19ba7a = 0x13880) {
+    const _0x49bac7 = _0x2edc89;
+    if (_hrtfSpatialTensorMesh) {
+        scene[_0x49bac7(0x1e0)](_hrtfSpatialTensorMesh);
+        if (_hrtfSpatialTensorMesh[_0x49bac7(0x204)])
+            _hrtfSpatialTensorMesh[_0x49bac7(0x204)][_0x49bac7(0x11e)]();
+        if (_hrtfSpatialTensorMesh['material'])
+            _hrtfSpatialTensorMesh[_0x49bac7(0x1d7)][_0x49bac7(0x11e)]();
+        _hrtfSpatialTensorMesh = null;
+    }
+    if (_0x19ba7a <= 0x0)
+        return;
+    _spectralTapCapacity = _0x19ba7a,
+        _currentResonantSectorX = null,
+        _currentResonantSectorZ = null;
+    const _0x1d1598 = _synthesizeDipoleResonanceRibbon()
+        , _0x128adb = new THREE['MeshStandardMaterial']({
+            'color': PAL[_0x49bac7(0x208)] || 0xf0c830,
+            'roughness': 0.7,
+            'metalness': 0.1,
+            'side': THREE[_0x49bac7(0x1ff)],
+            'shadowSide': THREE[_0x49bac7(0x1ff)]
+        });
+    function _0xe76fff(_0x2a5938, _0x289f90 = ![]) {
+        const _0x2cead1 = _0x49bac7;
+        _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x173)] = _dspBiquadUniforms['uAudioEmitterNode'],
+            _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x13c)] = _dspBiquadUniforms[_0x2cead1(0x13c)],
+            _0x2a5938['uniforms']['uHeadOrientationVector'] = _dspBiquadUniforms[_0x2cead1(0x1c6)],
+            _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x113)] = _dspBiquadUniforms[_0x2cead1(0x113)],
+            _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x20f)] = _dspBiquadUniforms['uFundamentalModulationHz'],
+            _0x2a5938[_0x2cead1(0x1b6)]['uNyquistDistanceHorizon'] = _dspBiquadUniforms[_0x2cead1(0x138)],
+            _0x2a5938[_0x2cead1(0x1b6)][_0x2cead1(0x17f)] = _dspBiquadUniforms['uAcousticProximityFalloff'],
+            _0x2a5938[_0x2cead1(0x21e)] = _0x2cead1(0x20d) + _0x2a5938[_0x2cead1(0x21e)];
+        const _0x44f1c8 = _0x289f90 ? '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(acousticTravelDistance\x20>\x201400.0)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20=\x200.0;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed\x20*=\x20psychoacousticAudibility;\x0a\x20\x20\x20\x20\x20\x20\x20\x20' : _0x2cead1(0x12d);
+        _0x2a5938['vertexShader'] = _0x2a5938[_0x2cead1(0x21e)]['replace'](_0x2cead1(0x1c7), _0x2cead1(0x12c) + _0x44f1c8 + _0x2cead1(0x207));
+    }
+    _0x128adb[_0x49bac7(0x1dc)] = function (_0x32f658) {
+        _0xe76fff(_0x32f658, ![]);
+    }
+        ,
+        _hrtfSpatialTensorMesh = new THREE[(_0x49bac7(0x111))](_0x1d1598, _0x128adb, _0x19ba7a),
+        _hrtfSpatialTensorMesh[_0x49bac7(0x1bf)] = !![],
+        _hrtfSpatialTensorMesh['receiveShadow'] = !![];
+    const _0x4007c8 = new THREE[(_0x49bac7(0x169))]({
+        'depthPacking': THREE['RGBADepthPacking']
+    });
+    _0x4007c8[_0x49bac7(0x1dc)] = function (_0x3231b7) {
+        _0xe76fff(_0x3231b7, !![]);
+    }
+        ,
+        _hrtfSpatialTensorMesh[_0x49bac7(0x185)] = _0x4007c8,
+        _shiftHarmonicPhaseMatrix(0x0, 0x0, 0x0, -0x1),
+        scene['add'](_hrtfSpatialTensorMesh);
+}
+function _processBiquadHarmonicDSP(_0xdb96b3, _0x3fa5a5, _0x14463d, _0x2d6248, _0x25f16a) {
+    const _0x303f8f = _0x2edc89;
+    if (!_hrtfSpatialTensorMesh)
+        return;
+    const _0x3927cb = THREE[_0x303f8f(0x180)]['degToRad'](typeof camYawDeg !== 'undefined' ? camYawDeg : 0x0)
+        , _0x205241 = -Math['sin'](_0x3927cb)
+        , _0x495b49 = -Math[_0x303f8f(0x17e)](_0x3927cb)
+        , _0x5a0091 = typeof camera !== _0x303f8f(0x1e4) ? camera[_0x303f8f(0x1ad)]['x'] : _0xdb96b3
+        , _0x3f0eae = typeof camera !== _0x303f8f(0x1e4) ? camera['position']['z'] : _0x14463d
+        , _0x2ea4ad = THREE['MathUtils'][_0x303f8f(0x14a)](typeof camFov !== 'undefined' ? camFov : 0x2d)
+        , _0x3163b3 = typeof aspect !== _0x303f8f(0x1e4) ? aspect : window[_0x303f8f(0x110)] / window['innerHeight']
+        , _0xd8300 = Math[_0x303f8f(0x122)](Math['tan'](_0x2ea4ad / 0x2) * _0x3163b3)
+        , _0x321d57 = Math[_0x303f8f(0x17e)](_0xd8300 + 0.1);
+    _dspBiquadUniforms[_0x303f8f(0x13c)][_0x303f8f(0x120)][_0x303f8f(0x218)](_0x5a0091, 0x0, _0x3f0eae),
+        _dspBiquadUniforms[_0x303f8f(0x1c6)]['value']['set'](_0x205241, 0x0, _0x495b49),
+        _dspBiquadUniforms[_0x303f8f(0x113)][_0x303f8f(0x120)] = _0x321d57,
+        _shiftHarmonicPhaseMatrix(_0x5a0091, _0x3f0eae, _0x205241, _0x495b49),
+        _dspBiquadUniforms[_0x303f8f(0x173)][_0x303f8f(0x120)][_0x303f8f(0x218)](_0xdb96b3, _0x3fa5a5, _0x14463d),
+        _dspBiquadUniforms[_0x303f8f(0x20f)][_0x303f8f(0x120)] = _0x25f16a,
+        typeof maxVisDist !== 'undefined' && maxVisDist < 0x2710 ? _dspBiquadUniforms[_0x303f8f(0x138)][_0x303f8f(0x120)] = maxVisDist : _dspBiquadUniforms[_0x303f8f(0x138)][_0x303f8f(0x120)] = 0xaf0;
+}
+const createGrassLandscape = _initBinauralSpectralConvolver
+    , updateGrassPhysics = _processBiquadHarmonicDSP
+    , grassUniforms = _dspBiquadUniforms;
+createGrassLandscape(0x13880);
+let skyMesh = null
+    , skyMaterial = null;
+const skyUniforms = {
+    'uSunDir': {
+        'value': new THREE[(_0x2edc89(0x146))](0x0, 0.44721, -0.89443)
+    },
+    'uColorHotCore': {
+        'value': new THREE[(_0x2edc89(0x13b))](0x1, 0x1, 0x1)
+    },
+    'uColorHotGlow': {
+        'value': new THREE[(_0x2edc89(0x13b))](0.78, 0.93, 0x1)
+    },
+    'uColorSun': {
+        'value': new THREE[(_0x2edc89(0x13b))](0.58, 0.82, 0.98)
+    },
+    'uColorHorizon': {
+        'value': new THREE[(_0x2edc89(0x13b))](0.35, 0.68, 0.92)
+    },
+    'uColorZenith': {
+        'value': new THREE['Color'](0.06, 0.16, 0.42)
+    },
+    'uTime': {
+        'value': 0x0
+    },
+    'uCloudColor': {
+        'value': new THREE['Color'](0.96, 0.98, 0x1)
+    },
+    'uCloudShadowColor': {
+        'value': new THREE[(_0x2edc89(0x13b))](0.38, 0.5, 0.7)
+    },
+    'uCloudCoverage': {
+        'value': 0.42
+    }
+};
+function initSky() {
+    const _0x4f639e = _0x2edc89;
+    if (skyMesh)
+        return;
+    const _0x4a8cc2 = new THREE[(_0x4f639e(0x18c))](0x36b0, 0x20, 0x10);
+    skyMaterial = new THREE['ShaderMaterial']({
+        'uniforms': skyUniforms,
+        'vertexShader': _0x4f639e(0x131),
+        'fragmentShader': _0x4f639e(0x1c4),
+        'side': THREE[_0x4f639e(0x19a)],
+        'depthWrite': ![]
+    }),
+        skyMesh = new THREE[(_0x4f639e(0x114))](_0x4a8cc2, skyMaterial),
+        skyMesh[_0x4f639e(0x19e)] = -0x3e8,
+        scene[_0x4f639e(0x152)](skyMesh);
+}
+function updateSky(_0xa6e5fe, _0x230a2d) {
+    const _0x1e06a1 = _0x2edc89;
+    !skyMesh && initSky();
+    if (skyMesh) {
+        if (typeof _0x230a2d === 'number')
+            skyUniforms[_0x1e06a1(0x1b5)][_0x1e06a1(0x120)] = _0x230a2d;
+        else
+            typeof clock !== _0x1e06a1(0x1e4) && (skyUniforms['uTime'][_0x1e06a1(0x120)] = clock[_0x1e06a1(0x1a2)]());
+        camera && skyMesh['position'][_0x1e06a1(0x15b)](camera[_0x1e06a1(0x1ad)]);
+        if (typeof dirLight !== _0x1e06a1(0x1e4)) {
+            const _0x1ff5e5 = new THREE[(_0x1e06a1(0x146))](0x0, 0x9c4, -0x1388)[_0x1e06a1(0x178)]();
+            skyUniforms[_0x1e06a1(0x1ce)]['value'][_0x1e06a1(0x15b)](_0x1ff5e5);
+        }
+    }
+}
+const playerGroup = new THREE[(_0x2edc89(0x14d))]();
+scene[_0x2edc89(0x152)](playerGroup);
+const pShadow = new THREE[(_0x2edc89(0x114))](new THREE['CircleGeometry']((PLAYER_RADIUS + 0x4) * 0.5, 0x10), new THREE['MeshBasicMaterial']({
+    'color': PAL[_0x2edc89(0x147)],
+    'transparent': !![],
+    'opacity': 0.5
+}));
+pShadow[_0x2edc89(0x1a5)]['x'] = -Math['PI'] / 0x2,
+    pShadow[_0x2edc89(0x1ad)]['y'] = 0.6,
+    scene[_0x2edc89(0x152)](pShadow);
+let mixer = null
+    , idleAction = null
+    , walkAction = null
+    , jumpAction = null
+    , isWalking = ![]
+    , isGrounded = !![];
+const animations = {};
+let glbReady = ![];
+const PLAYER_GLB = _0x2edc89(0x1cc)
+    , _loader = new THREE[(_0x2edc89(0x21f))]();
+_loader[_0x2edc89(0x118)](PLAYER_GLB, function (_0xd861ba) {
+    const _0x5c069b = _0x2edc89
+        , _0x151ea4 = _0xd861ba['scene']
+        , _0x2f667e = new THREE['Box3']()[_0x5c069b(0x142)](_0x151ea4)
+        , _0x41d57a = new THREE[(_0x5c069b(0x146))]();
+    _0x2f667e[_0x5c069b(0x1da)](_0x41d57a);
+    if (_0x41d57a['y'] > 0x0)
+        _0x151ea4[_0x5c069b(0x15d)][_0x5c069b(0x1b3)](PLAYER_HEIGHT / _0x41d57a['y']);
+    _0x151ea4[_0x5c069b(0x206)](function (_0x53852e) {
+        const _0x99c3de = _0x5c069b;
+        _0x53852e['isMesh'] && (_0x53852e['castShadow'] = !![],
+            _0x53852e[_0x99c3de(0x15f)] = !![]);
+    });
+    const _0x490088 = new THREE[(_0x5c069b(0x10f))]()[_0x5c069b(0x142)](_0x151ea4);
+    _0x151ea4[_0x5c069b(0x1ad)]['y'] = -_0x490088[_0x5c069b(0x1f2)]['y'] + 0x5,
+        playerGroup[_0x5c069b(0x152)](_0x151ea4);
+    const _0x4b0317 = [_0x5c069b(0x141), _0x5c069b(0x1ec), 'ponytail3', _0x5c069b(0x124), 'ponytail5'];
+    window['ponytailBones'] = new Array(0x5)[_0x5c069b(0x19c)](null),
+        _0x151ea4[_0x5c069b(0x206)](function (_0x47913f) {
+            const _0x190c4b = _0x5c069b;
+            if (_0x47913f[_0x190c4b(0x130)]) {
+                const _0x158086 = _0x4b0317[_0x190c4b(0x14b)](_0x47913f['name'][_0x190c4b(0x1d1)]());
+                _0x158086 !== -0x1 && (_0x47913f['_restQuaternion'] = _0x47913f[_0x190c4b(0x181)][_0x190c4b(0x17d)](),
+                    window[_0x190c4b(0x18d)][_0x158086] = _0x47913f);
+            }
+        }),
+        mixer = new THREE[(_0x5c069b(0x148))](_0x151ea4);
+    if (_0xd861ba[_0x5c069b(0x1b7)] && _0xd861ba[_0x5c069b(0x1b7)][_0x5c069b(0x1b4)] > 0x0) {
+        _0xd861ba[_0x5c069b(0x1b7)][_0x5c069b(0x194)](function (_0x5e9985) {
+            const _0x1b193f = _0x5c069b
+                , _0x4ea88f = mixer[_0x1b193f(0x21b)](_0x5e9985);
+            _0x4ea88f[_0x1b193f(0x156)](THREE[_0x1b193f(0x200)]),
+                animations[_0x5e9985[_0x1b193f(0x130)]['toLowerCase']()] = _0x4ea88f;
+        }),
+            idleAction = animations[_0x5c069b(0x112)] || Object[_0x5c069b(0x15a)](animations)[0x0],
+            walkAction = animations[_0x5c069b(0x11a)] || null,
+            jumpAction = animations['hero-jump'] || null;
+        jumpAction && (jumpAction[_0x5c069b(0x156)](THREE[_0x5c069b(0x132)]),
+            jumpAction[_0x5c069b(0x223)] = !![]);
+        if (idleAction)
+            idleAction[_0x5c069b(0x13a)]();
+    }
+    glbReady = !![];
+}, undefined, function (_0x38bb2d) {
+    const _0x2721d3 = _0x2edc89;
+    console[_0x2721d3(0x224)](_0x2721d3(0x188) + PLAYER_GLB + ':', _0x38bb2d);
+}),
+    (function () {
+        const _0x4cb12b = _0x2edc89;
+        let _0x47dae9 = 0x0
+            , _0x3c55f = 0x0
+            , _0x125b97 = 0x0
+            , _0x231587 = 0x0
+            , _0x6ff8e1 = ![];
+        const _0x11e3fe = [0x0, 0x0, 0x0, 0x0, 0x0]
+            , _0x580647 = [0x0, 0x0, 0x0, 0x0, 0x0]
+            , _0x34c4e6 = [0x0, 0x0, 0x0, 0x0, 0x0]
+            , _0x401f21 = new THREE[(_0x4cb12b(0x219))]()
+            , _0x447f9b = new THREE[(_0x4cb12b(0x1cb))](0x0, 0x0, 0x0, _0x4cb12b(0x13f));
+        window[_0x4cb12b(0x209)] = function (_0x148bfd) {
+            const _0x874515 = _0x4cb12b;
+            if (!window[_0x874515(0x18d)] || window[_0x874515(0x18d)][_0x874515(0x1b4)] === 0x0 || !playerGroup)
+                return;
+            if (_0x148bfd <= 0x0)
+                return;
+            const _0x5ef4e6 = playerGroup['position']['x']
+                , _0x550dd7 = playerGroup[_0x874515(0x1ad)]['y']
+                , _0x45e9c7 = playerGroup['position']['z']
+                , _0x5800f6 = playerGroup[_0x874515(0x1a5)]['y'];
+            if (!_0x6ff8e1) {
+                _0x47dae9 = _0x5ef4e6,
+                    _0x3c55f = _0x550dd7,
+                    _0x125b97 = _0x45e9c7,
+                    _0x231587 = _0x5800f6,
+                    _0x6ff8e1 = !![];
+                return;
+            }
+            const _0x5e17d7 = (_0x5ef4e6 - _0x47dae9) / _0x148bfd
+                , _0x40510b = (_0x550dd7 - _0x3c55f) / _0x148bfd
+                , _0xf7e722 = (_0x45e9c7 - _0x125b97) / _0x148bfd;
+            let _0x2db5fa = _0x5800f6 - _0x231587;
+            while (_0x2db5fa > Math['PI'])
+                _0x2db5fa -= Math['PI'] * 0x2;
+            while (_0x2db5fa < -Math['PI'])
+                _0x2db5fa += Math['PI'] * 0x2;
+            const _0x1908dd = _0x2db5fa / _0x148bfd;
+            _0x47dae9 = _0x5ef4e6,
+                _0x3c55f = _0x550dd7,
+                _0x125b97 = _0x45e9c7,
+                _0x231587 = _0x5800f6;
+            const _0x42550c = Math[_0x874515(0x20a)](_0x5800f6)
+                , _0x551487 = Math[_0x874515(0x17e)](_0x5800f6)
+                , _0x3f4589 = -(_0x5e17d7 * _0x42550c + _0xf7e722 * _0x551487)
+                , _0x26e457 = _0x5e17d7 * _0x551487 - _0xf7e722 * _0x42550c
+                , _0x3f2cb2 = THREE[_0x874515(0x180)][_0x874515(0x18b)](_0x3f4589 / PLAYER_SPEED, -0.5, 0x1)
+                , _0x29b00b = THREE['MathUtils'][_0x874515(0x18b)](_0x40510b * 0.0035, -0.15, 0.15)
+                , _0x1e133e = -_0x3f2cb2 * 0.55 - _0x29b00b
+                , _0x42df22 = THREE[_0x874515(0x180)][_0x874515(0x18b)](-_0x26e457 / PLAYER_SPEED * 0.3 - _0x1908dd * 0.08, -0.35, 0.35)
+                , _0x5aefd0 = THREE[_0x874515(0x180)][_0x874515(0x18b)](-_0x1908dd * 0.1, -0.2, 0.2)
+                , _0x2d2591 = [0.05, 0.15, 1.1, 0.75, 0.9]
+                , _0x31f11b = 2.95
+                , _0x3ec3cb = THREE[_0x874515(0x180)][_0x874515(0x14a)](0x73)
+                , _0x1ee63e = _0x3ec3cb / _0x31f11b
+                , _0x4b555f = THREE['MathUtils']['clamp'](_0x1e133e, -_0x1ee63e, _0x1ee63e)
+                , _0x5e2982 = 0x6
+                , _0x5bd738 = window[_0x874515(0x18d)];
+            for (let _0x369c71 = 0x0; _0x369c71 < 0x5; _0x369c71++) {
+                const _0x2265b0 = _0x5bd738[_0x369c71];
+                if (!_0x2265b0)
+                    continue;
+                const _0x205764 = _0x2d2591[_0x369c71]
+                    , _0x40fc12 = _0x4b555f * _0x205764
+                    , _0x31fd35 = _0x42df22 * _0x205764
+                    , _0x117922 = _0x5aefd0 * _0x205764
+                    , _0x51d414 = 0x1 - Math[_0x874515(0x150)](-_0x5e2982 * _0x148bfd);
+                _0x11e3fe[_0x369c71] += (_0x40fc12 - _0x11e3fe[_0x369c71]) * _0x51d414,
+                    _0x580647[_0x369c71] += (_0x31fd35 - _0x580647[_0x369c71]) * _0x51d414,
+                    _0x34c4e6[_0x369c71] += (_0x117922 - _0x34c4e6[_0x369c71]) * _0x51d414,
+                    _0x2265b0['_restQuaternion'] && _0x2265b0[_0x874515(0x181)][_0x874515(0x15b)](_0x2265b0[_0x874515(0x153)]),
+                    _0x447f9b[_0x874515(0x218)](_0x11e3fe[_0x369c71], _0x34c4e6[_0x369c71], _0x580647[_0x369c71], _0x874515(0x13f)),
+                    _0x401f21[_0x874515(0x1be)](_0x447f9b),
+                    _0x2265b0['quaternion']['multiply'](_0x401f21);
+            }
+        }
+            ;
+    }());
+const keys = {
+    'w': ![],
+    'a': ![],
+    's': ![],
+    'd': ![],
+    'space': ![]
+};
+function _0x2ce1() {
+    const _0xfa043c = ['PCFSoftShadowMap', 'CircleGeometry', 'baseY', 'devicePixelRatio', 'setAttribute', 'MeshDepthMaterial', '[player]\x20', 'Active\x20(Looping)', 'DirectionalLight', 'camera', 'removeEventListener', 'now', 'Scene', 'push', 'baseScale', 'uAudioEmitterNode', 'mousemove', '989001WCduxT', 'TorusGeometry', 'warn', 'normalize', 'update', 'needsUpdate', 'pow', '.perf-spike', 'clone', 'cos', 'uAcousticProximityFalloff', 'MathUtils', 'quaternion', 'blur', 'DodecahedronGeometry', 'function', 'customDepthMaterial', 'Click\x20to\x20enable\x20audio', 'getStats', '[player]\x20Failed\x20to\x20load\x20', '.perf-avg', 'avgMsEl', 'clamp', 'SphereGeometry', 'ponytailBones', 'setPixelRatio', 'volume', 'Audio\x20play\x20deferred\x20until\x20user\x20interaction:', 'ctrl-wind-mute', 'addEventListener', 'checked', 'forEach', '#888', 'floorNegZ', 'key', 'DOMContentLoaded', 'NONE', 'BackSide', 'total', 'fill', 'ms)', 'renderOrder', 'resetBaseline', 'AmbientLight', 'domElement', 'getElapsedTime', 'body', 'aspect', 'rotation', 'round', 'near', 'visible', 'touchstart', 'intersectsBox', 'updateMatrixWorld', '230642RxAOjI', 'position', 'speed', '14284584UGBZsH', 'bottom', 'then', 'ctrl-grass-density', 'setScalar', 'length', 'uTime', 'uniforms', 'animations', 'readyState', 'height', 'abs', 'right', 'initHUD', 'baselineAvgMs', 'setFromEuler', 'castShadow', 'setEffectiveTimeScale', 'WIND-SFX.mp3', 'target', 'max', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20varying\x20vec3\x20vWorldPos;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uSunDir;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorHotCore;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorHotGlow;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorSun;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorHorizon;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uColorZenith;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uTime;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uCloudColor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uCloudShadowColor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uCloudCoverage;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20hash2(vec2\x20p)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20p\x20=\x20vec2(dot(p,\x20vec2(127.1,\x20311.7)),\x20dot(p,\x20vec2(269.5,\x20183.3)));\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20return\x20-1.0\x20+\x202.0\x20*\x20fract(sin(p)\x20*\x2043758.5453123);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20noise2D(vec2\x20p)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20i\x20=\x20floor(p);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20f\x20=\x20fract(p);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20u\x20=\x20f\x20*\x20f\x20*\x20(3.0\x20-\x202.0\x20*\x20f);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20return\x20mix(mix(dot(hash2(i\x20+\x20vec2(0.0,\x200.0)),\x20f\x20-\x20vec2(0.0,\x200.0)),\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20dot(hash2(i\x20+\x20vec2(1.0,\x200.0)),\x20f\x20-\x20vec2(1.0,\x200.0)),\x20u.x),\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20mix(dot(hash2(i\x20+\x20vec2(0.0,\x201.0)),\x20f\x20-\x20vec2(0.0,\x201.0)),\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20dot(hash2(i\x20+\x20vec2(1.0,\x201.0)),\x20f\x20-\x20vec2(1.0,\x201.0)),\x20u.x),\x20u.y);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20fbm2D(vec2\x20p)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20val\x20=\x200.0;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20amp\x20=\x200.5;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20for\x20(int\x20i\x20=\x200;\x20i\x20<\x203;\x20i++)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20val\x20+=\x20amp\x20*\x20noise2D(p);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20p\x20*=\x202.02;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20amp\x20*=\x200.5;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20return\x20val;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20void\x20main()\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20dir\x20=\x20normalize(vWorldPos);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20height\x20=\x20clamp(dir.y,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20sunAlignment\x20=\x20max(0.0,\x20dot(dir,\x20uSunDir));\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20skyColor\x20=\x20mix(uColorHorizon,\x20uColorZenith,\x20pow(height,\x200.7));\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20sunAmbientGlow\x20=\x20pow(sunAlignment,\x202.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20uColorSun,\x20sunAmbientGlow\x20*\x200.75);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20hotGlowFactor\x20=\x20pow(sunAlignment,\x2064.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20uColorHotGlow,\x20hotGlowFactor\x20*\x200.95);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20hotCoreFactor\x20=\x20pow(sunAlignment,\x201024.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20uColorHotCore,\x20hotCoreFactor\x20*\x201.0);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(dir.y\x20>\x200.02)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20skyUV\x20=\x20dir.xz\x20/\x20(dir.y\x20+\x200.18);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20windDir\x20=\x20vec2(0.008,\x200.004)\x20*\x20uTime;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20samplePos\x20=\x20skyUV\x20*\x202.5\x20+\x20windDir;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20n\x20=\x20fbm2D(samplePos);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20n\x20=\x20n\x20*\x200.5\x20+\x200.5;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20cloudAlpha\x20=\x20smoothstep(uCloudCoverage,\x20uCloudCoverage\x20+\x200.28,\x20n);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20horizonFade\x20=\x20smoothstep(0.02,\x200.22,\x20dir.y);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20cloudAlpha\x20*=\x20horizonFade;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(cloudAlpha\x20>\x200.001)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20cloudHeightFactor\x20=\x20smoothstep(uCloudCoverage\x20+\x200.05,\x20uCloudCoverage\x20+\x200.35,\x20n);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20cColor\x20=\x20mix(uCloudShadowColor,\x20uCloudColor,\x20cloudHeightFactor);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20sunRim\x20=\x20pow(sunAlignment,\x204.0)\x20*\x20(1.0\x20-\x20cloudHeightFactor);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20cColor\x20=\x20mix(cColor,\x20uColorHotGlow,\x20sunRim\x20*\x200.8);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20cColor\x20=\x20mix(cColor,\x20uColorHotCore,\x20pow(sunAlignment,\x2012.0)\x20*\x200.5);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20skyColor\x20=\x20mix(skyColor,\x20cColor,\x20cloudAlpha\x20*\x200.88);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20gl_FragColor\x20=\x20vec4(skyColor,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'click', 'uHeadOrientationVector', '#include\x20<begin_vertex>', 'lerp', 'src', 'group', 'Euler', 'firstmodel.glb', '#camera-panel', 'uSunDir', 'enabled', 'left', 'toLowerCase', 'CylinderGeometry', 'setClearColor', 'preventDefault', 'btn-reset-baseline', '#c8ffc8', 'material', 'OctahedronGeometry', 'x:\x20', 'getSize', 'appendChild', 'onBeforeCompile', '#ffb050', 'box', 'requestPointerLock', 'remove', 'number', 'type', 'input', 'undefined', 'render', 'buffer', 'PerspectiveCamera', 'textContent', 'array', 'avgMs', 'obj', 'ponytail2', 'movementX', 'keyup', 'p99Ms', 'loading', '7682064DXnhFM', 'min', 'parent', '[player]\x20firstmodel.glb\x20ready.', 'Space', 'ctrl-wind-vol', 'change', '4hBLOLv', 'MeshStandardMaterial', 'mousedown', 'sort', 'BufferAttribute', 'getDelta', 'ctrl-player-speed', 'DoubleSide', 'LoopRepeat', 'record', '1677571vszLFZ', 'lookAt', 'geometry', 'toFixed', 'traverse', '\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20cantileverResonanceFactor\x20=\x20clamp(position.y\x20/\x2010.0,\x200.0,\x201.0);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20flutterEchoOffset\x20=\x20sin(uFundamentalModulationHz\x20*\x202.8\x20+\x20biquadWorldNode.x\x20*\x200.08\x20+\x20biquadWorldNode.z\x20*\x200.08)\x20*\x200.45\x20*\x20cantileverResonanceFactor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.x\x20+=\x20flutterEchoOffset;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(impulseSourceDistance\x20<\x20uAcousticProximityFalloff\x20&&\x20abs(biquadWorldNode.y\x20-\x20uAudioEmitterNode.y)\x20<\x2025.0)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20kineticWaveFront\x20=\x20normalize(biquadWorldNode.xz\x20-\x20uAudioEmitterNode.xz\x20+\x20vec2(0.0001));\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20dopplerShiftDeflection\x20=\x20(1.0\x20-\x20impulseSourceDistance\x20/\x20uAcousticProximityFalloff)\x20*\x204.5\x20*\x20cantileverResonanceFactor;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.x\x20+=\x20kineticWaveFront.x\x20*\x20dopplerShiftDeflection;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.z\x20+=\x20kineticWaveFront.y\x20*\x20dopplerShiftDeflection;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed.y\x20-=\x20dopplerShiftDeflection\x20*\x200.3;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', 'grass', 'updatePonytailPhysics', 'sin', 'diffEl', 'fadeOut', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20attribute\x20float\x20aOvertoneHarmonic;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uAudioEmitterNode;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uEarCanalOrigin;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20vec3\x20uHeadOrientationVector;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uPsychoacousticDecayAngle;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uFundamentalModulationHz;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uNyquistDistanceHorizon;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20uniform\x20float\x20uAcousticProximityFalloff;\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'reset', 'uFundamentalModulationHz', 'size', 'updateHUD', 'fpsEl', 'floor', 'index', 'fps', 'sqrt', '[HRTF-DSP]\x20Initialized\x20', 'set', 'Quaternion', 'code', 'clipAction', 'shadowMap', 'log', 'vertexShader', 'GLTFLoader', 'rings', 'oscAmp', 'pointerLockElement', 'clampWhenFinished', 'error', 'Box3', 'innerWidth', 'InstancedMesh', 'hero-idle', 'uPsychoacousticDecayAngle', 'Mesh', 'BufferGeometry', 'fadeIn', 'crystal', 'load', 'instanceMatrix', 'hero-walk', 'mesh', '#ui-overlay', 'space', 'dispose', 'innerHeight', 'value', 'setSize', 'atan', 'setIndex', 'ponytail4', 'isRunning', 'closest', '.perf-fps', 'WebGLRenderer', 'resize', '4874955wmzhjs', 'keydown', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#include\x20<begin_vertex>\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#ifdef\x20USE_INSTANCING\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec4\x20biquadWorldNode\x20=\x20instanceMatrix\x20*\x20vec4(0.0,\x200.0,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#else\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec4\x20biquadWorldNode\x20=\x20modelMatrix\x20*\x20vec4(0.0,\x200.0,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20#endif\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20interauralDelta\x20=\x20biquadWorldNode.xz\x20-\x20uEarCanalOrigin.xz;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20acousticTravelDistance\x20=\x20length(interauralDelta);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20impulseSourceDistance\x20=\x20length(biquadWorldNode.xz\x20-\x20uAudioEmitterNode.xz);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(aOvertoneHarmonic\x20>\x200.5)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20overtoneModulationGain\x20=\x20smoothstep(300.0,\x2050.0,\x20acousticTravelDistance);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec3\x20overtoneOrigin\x20=\x20vec3(1.8,\x200.0,\x201.8);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed\x20=\x20overtoneOrigin\x20+\x20(transformed\x20-\x20overtoneOrigin)\x20*\x20overtoneModulationGain;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20psychoacousticAudibility\x20=\x201.0;\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(acousticTravelDistance\x20>\x2010.0)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec2\x20normalizedWavefront\x20=\x20interauralDelta\x20/\x20acousticTravelDistance;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20interauralPhaseCoherence\x20=\x20dot(normalizedWavefront,\x20uHeadOrientationVector.xz);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(interauralPhaseCoherence\x20<\x20uPsychoacousticDecayAngle)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20phaseDamping\x20=\x20clamp((interauralPhaseCoherence\x20-\x20(uPsychoacousticDecayAngle\x20-\x200.20))\x20/\x200.20,\x200.0,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20*=\x20phaseDamping;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20if\x20(acousticTravelDistance\x20>\x20uNyquistDistanceHorizon)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20=\x200.0;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x20else\x20if\x20(acousticTravelDistance\x20>\x20uNyquistDistanceHorizon\x20*\x200.75)\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20float\x20t\x20=\x20(acousticTravelDistance\x20-\x20uNyquistDistanceHorizon\x20*\x200.75)\x20/\x20(uNyquistDistanceHorizon\x20*\x200.25);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20psychoacousticAudibility\x20*=\x20(1.0\x20-\x20smoothstep(0.0,\x201.0,\x20t));\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20transformed\x20*=\x20psychoacousticAudibility;\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'frameCounter', 'movementY', 'name', '\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20varying\x20vec3\x20vWorldPos;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20void\x20main()\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vWorldPos\x20=\x20position;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20vec4\x20mvPosition\x20=\x20modelViewMatrix\x20*\x20vec4(position,\x201.0);\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20gl_Position\x20=\x20projectionMatrix\x20*\x20mvPosition;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20', 'LoopOnce', 'pointerdown', 'val-wind-vol', 'wind-sfx.mp3', 'setBaseline', 'time', 'uNyquistDistanceHorizon', 'floorPosZ', 'play', 'Color', 'uEarCanalOrigin', 'mouseup', 'SET\x20(', 'YXZ', 'style', 'ponytail1', 'setFromObject', 'hudEl', '6319288BUSQIS', 'catch', 'Vector3', 'shadow', 'AnimationMixer', 'spikeMsEl', 'degToRad', 'indexOf', 'getElementById', 'Group', '#5cf0a0', 'clientX', 'exp', 'btn-set-baseline', 'add', '_restQuaternion', '4lsjAut', 'color', 'setLoop', 'loaded', 'querySelector', '\x20\x20z:\x20', 'values', 'copy', 'val-player-speed', 'scale', 'mapSize', 'receiveShadow', 'Clock', 'opacity', 'count', 'clientY'];
+    _0x2ce1 = function () {
+        return _0xfa043c;
+    }
+        ;
+    return _0x2ce1();
+}
+window[_0x2edc89(0x192)](_0x2edc89(0x12b), _0x4f4441 => {
+    const _0x213524 = _0x2edc89;
+    (_0x4f4441[_0x213524(0x21a)] === _0x213524(0x1f5) || _0x4f4441[_0x213524(0x197)] === '\x20') && (keys[_0x213524(0x11d)] = !![],
+        _0x4f4441[_0x213524(0x1d4)]());
+    const _0x3736ed = _0x4f4441[_0x213524(0x197)][_0x213524(0x1d1)]();
+    if (_0x3736ed in keys)
+        keys[_0x3736ed] = !![];
+}
+),
+    window['addEventListener'](_0x2edc89(0x1ee), _0x28581c => {
+        const _0x5763bb = _0x2edc89;
+        (_0x28581c[_0x5763bb(0x21a)] === 'Space' || _0x28581c[_0x5763bb(0x197)] === '\x20') && (keys['space'] = ![],
+            _0x28581c[_0x5763bb(0x1d4)]());
+        const _0xe0e5de = _0x28581c[_0x5763bb(0x197)][_0x5763bb(0x1d1)]();
+        if (_0xe0e5de in keys)
+            keys[_0xe0e5de] = ![];
+    }
+    ),
+    window[_0x2edc89(0x192)](_0x2edc89(0x182), () => {
+        const _0x49b5ce = _0x2edc89;
+        keys['w'] = keys['a'] = keys['s'] = keys['d'] = keys[_0x49b5ce(0x11d)] = ![];
+    }
+    );
+const _playerBox = new THREE[(_0x2edc89(0x10f))]();
+function _0x403a(_0x12088d, _0x5b9cfb) {
+    _0x12088d = _0x12088d - 0x10f;
+    const _0x2ce1c0 = _0x2ce1();
+    let _0x403ab0 = _0x2ce1c0[_0x12088d];
+    return _0x403ab0;
+}
+function getPlayerAABB(_0xa7cb13, _0x4b6fe7 = 0x0, _0x428f81 = 0x0) {
+    const _0x6c0f8 = _0x2edc89;
+    return _playerBox[_0x6c0f8(0x1f2)][_0x6c0f8(0x218)](_0xa7cb13 - PLAYER_RADIUS, _0x4b6fe7, _0x428f81 - PLAYER_RADIUS),
+        _playerBox['max'][_0x6c0f8(0x218)](_0xa7cb13 + PLAYER_RADIUS, _0x4b6fe7 + PLAYER_HEIGHT, _0x428f81 + PLAYER_RADIUS),
+        _playerBox;
+}
+function testCollision(_0x273d65, _0x2fdba5 = 0x0, _0x2a8702 = 0x0) {
+    const _0x3d49ff = _0x2edc89
+        , _0x5f2125 = getPlayerAABB(_0x273d65, _0x2fdba5, _0x2a8702)
+        , _0x2ff435 = 0.5;
+    for (let _0x141bcc = 0x0; _0x141bcc < obstacles[_0x3d49ff(0x1b4)]; _0x141bcc++) {
+        const _0x2c06f0 = obstacles[_0x141bcc][_0x3d49ff(0x1de)];
+        if (_0x2fdba5 >= _0x2c06f0[_0x3d49ff(0x1c3)]['y'] - _0x2ff435)
+            continue;
+        if (_0x5f2125[_0x3d49ff(0x1aa)](_0x2c06f0))
+            return !![];
+    }
+    return ![];
+}
+const WALK_FADE_IN = 0.18
+    , WALK_FADE_OUT = 0.25
+    , JUMP_LAUNCH_BLEND = 0.14
+    , MIN_WALK_SPEED = 0x8
+    , WALK_ANIM_SPEED_MULT = 1.35;
+let velX = 0x0
+    , velY = 0x0
+    , velZ = 0x0;
+function getGroundHeight(_0x480bea, _0x101c10, _0x4e9891 = PLAYER_RADIUS) {
+    const _0x3f381f = _0x2edc89;
+    let _0x4c59cd = 0x0;
+    if (typeof obstacles !== _0x3f381f(0x1e4))
+        for (let _0x2659d5 = 0x0; _0x2659d5 < obstacles['length']; _0x2659d5++) {
+            const _0x175217 = obstacles[_0x2659d5]['box'];
+            _0x480bea + _0x4e9891 > _0x175217['min']['x'] && _0x480bea - _0x4e9891 < _0x175217[_0x3f381f(0x1c3)]['x'] && _0x101c10 + _0x4e9891 > _0x175217[_0x3f381f(0x1f2)]['z'] && _0x101c10 - _0x4e9891 < _0x175217[_0x3f381f(0x1c3)]['z'] && (_0x175217[_0x3f381f(0x1c3)]['y'] > _0x4c59cd && (_0x4c59cd = _0x175217['max']['y']));
+        }
+    return _0x4c59cd;
+}
+function updatePlayerController(_0x1a640d) {
+    const _0x3d7104 = _0x2edc89;
+    if (mixer)
+        mixer[_0x3d7104(0x179)](_0x1a640d);
+    if (!glbReady)
+        return;
+    let _0x39c5c2 = (keys['d'] ? 0x1 : 0x0) - (keys['a'] ? 0x1 : 0x0)
+        , _0x326782 = (keys['s'] ? 0x1 : 0x0) - (keys['w'] ? 0x1 : 0x0);
+    const _0x162af0 = THREE[_0x3d7104(0x180)]['degToRad'](camYawDeg || 0x0)
+        , _0x2069fd = _0x39c5c2 * Math['cos'](_0x162af0) + _0x326782 * Math[_0x3d7104(0x20a)](_0x162af0)
+        , _0x1d5fc9 = -_0x39c5c2 * Math[_0x3d7104(0x20a)](_0x162af0) + _0x326782 * Math[_0x3d7104(0x17e)](_0x162af0)
+        , _0x39224b = Math[_0x3d7104(0x216)](_0x2069fd * _0x2069fd + _0x1d5fc9 * _0x1d5fc9);
+    let _0x2011d1 = 0x0
+        , _0x5a4b03 = 0x0;
+    _0x39224b > 0x0 && (_0x2011d1 = _0x2069fd / _0x39224b,
+        _0x5a4b03 = _0x1d5fc9 / _0x39224b);
+    const _0x15d638 = _0x2011d1 * PLAYER_SPEED
+        , _0x5b1568 = _0x5a4b03 * PLAYER_SPEED;
+    if (_0x39224b > 0x0)
+        velX += (_0x15d638 - velX) * Math[_0x3d7104(0x1f2)](0x1, 0x10 * _0x1a640d),
+            velZ += (_0x5b1568 - velZ) * Math[_0x3d7104(0x1f2)](0x1, 0x10 * _0x1a640d);
+    else {
+        velX += (0x0 - velX) * Math['min'](0x1, PLAYER_FRICTION * _0x1a640d),
+            velZ += (0x0 - velZ) * Math[_0x3d7104(0x1f2)](0x1, PLAYER_FRICTION * _0x1a640d);
+        if (Math['abs'](velX) < 0.1)
+            velX = 0x0;
+        if (Math[_0x3d7104(0x1ba)](velZ) < 0.1)
+            velZ = 0x0;
+    }
+    let _0x2d2d85 = playerGroup['position']['x']
+        , _0x153a6d = playerGroup[_0x3d7104(0x1ad)]['y']
+        , _0x37481a = playerGroup[_0x3d7104(0x1ad)]['z'];
+    const _0x41b921 = _0x2d2d85
+        , _0x468041 = _0x37481a
+        , _0x51d169 = velX * _0x1a640d
+        , _0x59fe54 = velZ * _0x1a640d
+        , _0x5505e7 = _0x2d2d85 + _0x51d169;
+    !testCollision(_0x5505e7, _0x153a6d, _0x37481a) ? _0x2d2d85 = _0x5505e7 : velX = 0x0;
+    const _0x475b6e = _0x37481a + _0x59fe54;
+    !testCollision(_0x2d2d85, _0x153a6d, _0x475b6e) ? _0x37481a = _0x475b6e : velZ = 0x0;
+    const _0x16da65 = getGroundHeight(_0x2d2d85, _0x37481a);
+    let _0x504444 = ![];
+    if (keys['space'] && isGrounded) {
+        isGrounded = ![],
+            velY = JUMP_POWER;
+        if (idleAction)
+            idleAction[_0x3d7104(0x20c)](JUMP_LAUNCH_BLEND);
+        if (walkAction)
+            walkAction[_0x3d7104(0x20c)](JUMP_LAUNCH_BLEND);
+        jumpAction && (jumpAction[_0x3d7104(0x20e)](),
+            jumpAction[_0x3d7104(0x137)] = 0x0,
+            jumpAction[_0x3d7104(0x1c0)](0x1),
+            jumpAction[_0x3d7104(0x1cf)] = !![],
+            jumpAction['fadeIn'](JUMP_LAUNCH_BLEND),
+            jumpAction[_0x3d7104(0x13a)]());
+    }
+    if (!isGrounded) {
+        velY -= JUMP_GRAVITY * _0x1a640d,
+            _0x153a6d += velY * _0x1a640d;
+        jumpAction && (velY < 0x0 ? jumpAction[_0x3d7104(0x1c0)](1.75) : jumpAction[_0x3d7104(0x1c0)](0x1));
+        if (velY < 0x0 && jumpAction && !jumpAction[_0x3d7104(0x125)]()) {
+            jumpAction[_0x3d7104(0x20e)](),
+                jumpAction[_0x3d7104(0x137)] = 0.833,
+                jumpAction['enabled'] = !![],
+                jumpAction[_0x3d7104(0x1c0)](1.75),
+                jumpAction['play']();
+            if (idleAction)
+                idleAction[_0x3d7104(0x20c)](0.1);
+            if (walkAction)
+                walkAction[_0x3d7104(0x20c)](0.1);
+        }
+        jumpAction && jumpAction[_0x3d7104(0x125)]() && (jumpAction[_0x3d7104(0x137)] >= 1.55 && (jumpAction[_0x3d7104(0x137)] = 1.55)),
+            _0x153a6d <= _0x16da65 && (_0x153a6d = _0x16da65,
+                velY = 0x0,
+                isGrounded = !![],
+                _0x504444 = !![],
+                jumpAction && (jumpAction[_0x3d7104(0x1c0)](0x1),
+                    jumpAction[_0x3d7104(0x137)] = 1.6667,
+                    jumpAction[_0x3d7104(0x20c)](0.3)));
+    } else
+        _0x153a6d > _0x16da65 + 0.1 ? (isGrounded = ![],
+            velY = 0x0) : _0x153a6d = _0x16da65;
+    playerGroup['position']['set'](_0x2d2d85, _0x153a6d, _0x37481a),
+        pShadow[_0x3d7104(0x1ad)][_0x3d7104(0x218)](_0x2d2d85, _0x16da65 + 0.6, _0x37481a);
+    const _0x35658d = Math[_0x3d7104(0x1c3)](0x0, _0x153a6d - _0x16da65)
+        , _0xe0e032 = THREE[_0x3d7104(0x180)][_0x3d7104(0x18b)](0x1 - _0x35658d / 0x46 * 0.45, 0.55, 0x1);
+    pShadow[_0x3d7104(0x15d)][_0x3d7104(0x218)](_0xe0e032, _0xe0e032, 0x1),
+        pShadow[_0x3d7104(0x1d7)][_0x3d7104(0x161)] = THREE[_0x3d7104(0x180)][_0x3d7104(0x18b)](0.5 - _0x35658d / 0x46 * 0.25, 0.25, 0.5);
+    const _0x3d5537 = _0x2d2d85 - _0x41b921
+        , _0x45cb14 = _0x37481a - _0x468041
+        , _0x22d345 = Math[_0x3d7104(0x216)](_0x3d5537 * _0x3d5537 + _0x45cb14 * _0x45cb14) / Math[_0x3d7104(0x1c3)](_0x1a640d, 0.0001)
+        , _0x444e51 = _0x22d345 > MIN_WALK_SPEED;
+    if (_0x444e51 || _0x39224b > 0x0) {
+        const _0xf8cce7 = Math[_0x3d7104(0x1ba)](_0x3d5537) > 0.01 ? _0x3d5537 : _0x2011d1
+            , _0x36f821 = Math[_0x3d7104(0x1ba)](_0x45cb14) > 0.01 ? _0x45cb14 : _0x5a4b03;
+        if (_0xf8cce7 !== 0x0 || _0x36f821 !== 0x0) {
+            const _0x3fe3f0 = Math['atan2'](_0xf8cce7, _0x36f821);
+            let _0xd4262 = _0x3fe3f0 - playerGroup[_0x3d7104(0x1a5)]['y'];
+            while (_0xd4262 > Math['PI'])
+                _0xd4262 -= Math['PI'] * 0x2;
+            while (_0xd4262 < -Math['PI'])
+                _0xd4262 += Math['PI'] * 0x2;
+            playerGroup['rotation']['y'] += _0xd4262 * Math['min'](0x1, 0xe * _0x1a640d);
+        }
+    }
+    if (isGrounded) {
+        if (_0x504444) {
+            if (_0x444e51) {
+                if (idleAction)
+                    idleAction['fadeOut'](WALK_FADE_IN);
+                if (walkAction)
+                    walkAction['reset']()[_0x3d7104(0x116)](WALK_FADE_IN)['play']();
+                isWalking = !![];
+            } else {
+                if (walkAction)
+                    walkAction[_0x3d7104(0x20c)](WALK_FADE_OUT);
+                if (idleAction)
+                    idleAction['reset']()[_0x3d7104(0x116)](WALK_FADE_OUT)['play']();
+                isWalking = ![];
+            }
+        } else {
+            if (_0x444e51 && !isWalking) {
+                if (idleAction)
+                    idleAction[_0x3d7104(0x20c)](WALK_FADE_IN);
+                if (walkAction)
+                    walkAction[_0x3d7104(0x20e)]()[_0x3d7104(0x116)](WALK_FADE_IN)[_0x3d7104(0x13a)]();
+                isWalking = !![];
+            } else {
+                if (!_0x444e51 && isWalking) {
+                    if (walkAction)
+                        walkAction[_0x3d7104(0x20c)](WALK_FADE_OUT);
+                    if (idleAction)
+                        idleAction['reset']()[_0x3d7104(0x116)](WALK_FADE_OUT)['play']();
+                    isWalking = ![];
+                }
+            }
+        }
+    }
+    if (walkAction && isWalking && isGrounded) {
+        const _0x5e1c9c = THREE[_0x3d7104(0x180)][_0x3d7104(0x18b)](_0x22d345 / PLAYER_SPEED * WALK_ANIM_SPEED_MULT, 0.5, 1.7);
+        walkAction[_0x3d7104(0x1c0)](_0x5e1c9c);
+    }
+    typeof updatePonytailPhysics === _0x3d7104(0x184) && updatePonytailPhysics(_0x1a640d);
+}
+window[_0x2edc89(0x192)](_0x2edc89(0x129), () => {
+    const _0x5d60ea = _0x2edc89;
+    aspect = window[_0x5d60ea(0x110)] / window[_0x5d60ea(0x11f)],
+        camera && (camera[_0x5d60ea(0x1a4)] = aspect,
+            camera['updateProjectionMatrix']()),
+        renderer['setSize'](window[_0x5d60ea(0x110)], window[_0x5d60ea(0x11f)]);
+}
+);
+const ctrlGrassDensity = document[_0x2edc89(0x14c)](_0x2edc89(0x1b2));
+ctrlGrassDensity && ctrlGrassDensity[_0x2edc89(0x192)](_0x2edc89(0x1f7), () => {
+    const _0x5a89c7 = _0x2edc89
+        , _0x555d08 = parseInt(ctrlGrassDensity[_0x5a89c7(0x120)], 0xa);
+    typeof createGrassLandscape === _0x5a89c7(0x184) && createGrassLandscape(_0x555d08);
+}
+);
+const ctrlPlayerSpeed = document[_0x2edc89(0x14c)](_0x2edc89(0x1fe))
+    , valPlayerSpeed = document[_0x2edc89(0x14c)](_0x2edc89(0x15c));
+ctrlPlayerSpeed && valPlayerSpeed && ctrlPlayerSpeed[_0x2edc89(0x192)](_0x2edc89(0x1e3), _0x4e7dd2 => {
+    const _0x462b7c = _0x2edc89;
+    PLAYER_SPEED = parseFloat(_0x4e7dd2['target']['value']),
+        valPlayerSpeed[_0x462b7c(0x1e8)] = Math['round'](PLAYER_SPEED);
+}
+);
+let isDragging = ![]
+    , previousMouseX = 0x0
+    , previousMouseY = 0x0;
+renderer[_0x2edc89(0x1a1)][_0x2edc89(0x192)](_0x2edc89(0x1c5), _0x494c04 => {
+    const _0x3ad01a = _0x2edc89;
+    if (_0x494c04[_0x3ad01a(0x1c2)][_0x3ad01a(0x126)](_0x3ad01a(0x1cd)) || _0x494c04['target'][_0x3ad01a(0x126)](_0x3ad01a(0x11c)))
+        return;
+    document[_0x3ad01a(0x222)] !== renderer[_0x3ad01a(0x1a1)] && renderer['domElement'][_0x3ad01a(0x1df)]();
+}
+),
+    window[_0x2edc89(0x192)](_0x2edc89(0x1fa), _0x266e82 => {
+        const _0x14605e = _0x2edc89;
+        if (_0x266e82[_0x14605e(0x1c2)]['closest'](_0x14605e(0x1cd)) || _0x266e82[_0x14605e(0x1c2)][_0x14605e(0x126)](_0x14605e(0x11c)))
+            return;
+        isDragging = !![],
+            previousMouseX = _0x266e82[_0x14605e(0x14f)],
+            previousMouseY = _0x266e82['clientY'];
+    }
+    ),
+    window[_0x2edc89(0x192)](_0x2edc89(0x174), _0x4e000a => {
+        const _0x1576a3 = _0x2edc89;
+        let _0x21c178 = 0x0
+            , _0x4147e7 = 0x0;
+        if (document[_0x1576a3(0x222)] === renderer[_0x1576a3(0x1a1)])
+            _0x21c178 = _0x4e000a[_0x1576a3(0x1ed)],
+                _0x4147e7 = _0x4e000a[_0x1576a3(0x12f)];
+        else {
+            if (isDragging)
+                _0x21c178 = _0x4e000a[_0x1576a3(0x14f)] - previousMouseX,
+                    _0x4147e7 = _0x4e000a[_0x1576a3(0x163)] - previousMouseY,
+                    previousMouseX = _0x4e000a['clientX'],
+                    previousMouseY = _0x4e000a[_0x1576a3(0x163)];
+            else
+                return;
+        }
+        camYawDeg = (camYawDeg - _0x21c178 * 0.35) % 0x168;
+        if (camYawDeg < 0x0)
+            camYawDeg += 0x168;
+        camAngleDeg = THREE[_0x1576a3(0x180)][_0x1576a3(0x18b)](camAngleDeg - _0x4147e7 * 0.25, 0x5, 0x87);
+    }
+    ),
+    window[_0x2edc89(0x192)](_0x2edc89(0x13d), () => {
+        isDragging = ![];
+    }
+    ),
+    initCamera();
+const clock = new THREE[(_0x2edc89(0x160))]()
+    , coordsEl = document[_0x2edc89(0x14c)]('coords');
+function animate() {
+    const _0x1768aa = _0x2edc89;
+    requestAnimationFrame(animate);
+    const _0x1e5a76 = performance['now']()
+        , _0x1b0724 = Math[_0x1768aa(0x1f2)](clock[_0x1768aa(0x1fd)](), 0.05)
+        , _0x474346 = clock['elapsedTime'];
+    updatePlayerController(_0x1b0724);
+    const _0x508a0c = playerGroup[_0x1768aa(0x1ad)]['x']
+        , _0x1ddaeb = playerGroup[_0x1768aa(0x1ad)]['y']
+        , _0x391fd6 = playerGroup[_0x1768aa(0x1ad)]['z'];
+    typeof floor !== _0x1768aa(0x1e4) && (floor[_0x1768aa(0x1ad)]['x'] = _0x508a0c,
+        floor[_0x1768aa(0x1ad)]['z'] = _0x391fd6);
+    typeof updateHorizonDisplacement === _0x1768aa(0x184) && updateHorizonDisplacement(_0x508a0c, _0x391fd6, _0x1ddaeb);
+    if (typeof animatedMonuments !== _0x1768aa(0x1e4) && animatedMonuments[_0x1768aa(0x1b4)] > 0x0) {
+        const _0x483cf0 = 0x2710 * 0x2710;
+        for (let _0x3ab0e8 = 0x0; _0x3ab0e8 < animatedMonuments[_0x1768aa(0x1b4)]; _0x3ab0e8++) {
+            const _0x23c7cf = animatedMonuments[_0x3ab0e8];
+            if (!_0x23c7cf['group'] || !_0x23c7cf['group'][_0x1768aa(0x1a8)])
+                continue;
+            const _0x5d7826 = _0x23c7cf[_0x1768aa(0x1ca)]['position']['x'] - _0x508a0c
+                , _0x230463 = _0x23c7cf[_0x1768aa(0x1ca)][_0x1768aa(0x1ad)]['z'] - _0x391fd6;
+            if (_0x5d7826 * _0x5d7826 + _0x230463 * _0x230463 > _0x483cf0)
+                continue;
+            _0x23c7cf[_0x1768aa(0x117)] && (_0x23c7cf[_0x1768aa(0x117)][_0x1768aa(0x1a5)]['y'] += 0.8 * _0x1b0724);
+            if (_0x23c7cf['rings'])
+                for (let _0x4895eb = 0x0; _0x4895eb < _0x23c7cf[_0x1768aa(0x220)][_0x1768aa(0x1b4)]; _0x4895eb++) {
+                    const _0x34b087 = _0x23c7cf[_0x1768aa(0x220)][_0x4895eb];
+                    _0x34b087[_0x1768aa(0x11b)]['rotation']['z'] += _0x34b087[_0x1768aa(0x1ae)] * _0x1b0724,
+                        _0x34b087[_0x1768aa(0x11b)][_0x1768aa(0x1ad)]['y'] = _0x34b087[_0x1768aa(0x166)] + Math[_0x1768aa(0x20a)](_0x474346 * 2.2 + _0x4895eb * 1.5 + _0x3ab0e8) * _0x34b087[_0x1768aa(0x221)];
+                }
+        }
+    }
+    typeof updateGrassPhysics === _0x1768aa(0x184) && updateGrassPhysics(_0x508a0c, _0x1ddaeb, _0x391fd6, _0x1b0724, _0x474346);
+    const _0x2ef555 = 0x50
+        , _0x3c8864 = Math['min'](camAngleDeg, _0x2ef555)
+        , _0x3fbbab = THREE[_0x1768aa(0x180)]['degToRad'](_0x3c8864)
+        , _0x5bcf64 = THREE['MathUtils']['degToRad'](camYawDeg || 0x0)
+        , _0x3581fe = camHeight * Math[_0x1768aa(0x20a)](_0x3fbbab)
+        , _0x2d66ef = camHeight * Math[_0x1768aa(0x17e)](_0x3fbbab)
+        , _0x4d3c70 = _0x3581fe * Math[_0x1768aa(0x20a)](_0x5bcf64)
+        , _0x56518d = _0x3581fe * Math[_0x1768aa(0x17e)](_0x5bcf64);
+    camera[_0x1768aa(0x1ad)]['x'] = _0x508a0c + _0x4d3c70,
+        camera['position']['y'] = _0x1ddaeb + _0x2d66ef,
+        camera[_0x1768aa(0x1ad)]['z'] = _0x391fd6 + _0x56518d;
+    let _0x1fe7bb = _0x1ddaeb + 0xc;
+    if (camAngleDeg > _0x2ef555) {
+        const _0x4c4384 = THREE['MathUtils'][_0x1768aa(0x14a)](camAngleDeg - _0x2ef555);
+        _0x1fe7bb += camHeight * Math['tan'](_0x4c4384);
+    }
+    camera[_0x1768aa(0x203)](_0x508a0c, _0x1fe7bb, _0x391fd6);
+    typeof updateSky === _0x1768aa(0x184) && updateSky(_0x1b0724, _0x474346);
+    const _0x4071c3 = dirLight['shadow'][_0x1768aa(0x16d)][_0x1768aa(0x1bb)] - dirLight[_0x1768aa(0x147)]['camera'][_0x1768aa(0x1d0)]
+        , _0x3d529b = _0x4071c3 / dirLight[_0x1768aa(0x147)][_0x1768aa(0x15e)]['width']
+        , _0x5a9145 = Math['floor'](_0x508a0c / _0x3d529b) * _0x3d529b
+        , _0x4fb30f = Math['floor'](_0x391fd6 / _0x3d529b) * _0x3d529b
+        , _0x37efdd = 0x0;
+    dirLight[_0x1768aa(0x1ad)][_0x1768aa(0x218)](_0x5a9145, 0x9c4, _0x4fb30f - 0x1388),
+        dirLight[_0x1768aa(0x1c2)][_0x1768aa(0x1ad)][_0x1768aa(0x218)](_0x5a9145, _0x37efdd, _0x4fb30f),
+        dirLight[_0x1768aa(0x1c2)][_0x1768aa(0x1ab)]();
+    if (typeof obstacles !== 'undefined' && obstacles[_0x1768aa(0x1b4)] > 0x0) {
+        const _0x5ac56a = 0xa8c * 0xa8c;
+        for (let _0x49f76c = 0x0; _0x49f76c < obstacles[_0x1768aa(0x1b4)]; _0x49f76c++) {
+            const _0x514a8a = obstacles[_0x49f76c];
+            if (_0x514a8a && _0x514a8a[_0x1768aa(0x11b)]) {
+                const _0x4caf55 = _0x514a8a[_0x1768aa(0x11b)][_0x1768aa(0x1f3)] ? _0x514a8a[_0x1768aa(0x11b)][_0x1768aa(0x1f3)][_0x1768aa(0x1ad)] : _0x514a8a[_0x1768aa(0x11b)]['position']
+                    , _0x58eb23 = _0x4caf55['x'] - _0x508a0c
+                    , _0x3daf89 = _0x4caf55['z'] - _0x391fd6;
+                _0x514a8a['mesh'][_0x1768aa(0x1bf)] = _0x58eb23 * _0x58eb23 + _0x3daf89 * _0x3daf89 <= _0x5ac56a;
+            }
+        }
+    }
+    coordsEl[_0x1768aa(0x1e8)] = _0x1768aa(0x1d9) + Math[_0x1768aa(0x1a6)](_0x508a0c) + _0x1768aa(0x159) + Math[_0x1768aa(0x1a6)](_0x391fd6),
+        renderer[_0x1768aa(0x1e5)](scene, camera),
+        typeof perfMonitor !== _0x1768aa(0x1e4) && perfMonitor[_0x1768aa(0x201)](performance[_0x1768aa(0x16f)]() - _0x1e5a76);
+}
+animate();
