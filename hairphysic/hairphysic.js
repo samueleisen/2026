@@ -251,7 +251,7 @@ export class HairPhysics {
             //   0.3 = light smoothing — good starting point
             //   0.7 = heavy lag, hair feels stiff / slow to react
             // Note: values above ~0.8 can make the root visibly detach from the scalp.
-            inertia: 0.55,
+            inertia: 0.5,
         };
 
         // Collision shapes (world-space offsets from head bone)
