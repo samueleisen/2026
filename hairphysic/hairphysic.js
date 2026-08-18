@@ -373,9 +373,6 @@ export class HairPhysics {
         this._updateColliders();
 
         this.initialized = this.chains.length > 0;
-        console.log(`[HairPhysics] Initialized ${this.chains.length} hair chains ` +
-            `(${this.chains.reduce((s, c) => s + c.particles.length, 0)} total particles). ` +
-            `Collisions: ${this._headBone ? 'ON' : 'OFF'}`);
     }
 
     // ------------------------------------------

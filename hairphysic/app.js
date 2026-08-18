@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { HairPhysics } from './hairphysic.js';
 import { HairBoneHelper } from './hairbonehelper.js';
 
@@ -128,7 +129,7 @@ function init() {
   controls.target.copy(characterRoot.position).add(new THREE.Vector3(0, 1.2, 0));
 
   // 9. Load Default Model
-  loadDefaultModel('./test003rigged.glb');
+  loadDefaultModel('./longhair-draco.glb');
 
   // 10. Setup Event Listeners
   setupEventListeners();
@@ -190,6 +191,9 @@ function buildStaticWorld() {
 function loadDefaultModel(url) {
   statusElem.textContent = 'Loading ' + url.split('/').pop() + '...';
   const loader = new GLTFLoader();
+  const dracoLoader = new DRACOLoader();
+  dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+  loader.setDRACOLoader(dracoLoader);
 
   loader.load(
     url,
@@ -363,6 +367,9 @@ function loadLocalFile(file) {
   reader.addEventListener('load', (e) => {
     const contents = e.target.result;
     const loader = new GLTFLoader();
+    const dracoLoader = new DRACOLoader();
+    dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+    loader.setDRACOLoader(dracoLoader);
     loader.parse(
       contents,
       '',

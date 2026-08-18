@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLB Model & Bone Viewer</title>
+    <title>HairPhysic </title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -138,10 +140,6 @@
             box-shadow: 0 0 15px rgba(34, 211, 238, 0.45);
         }
 
-        #file-input {
-            display: none;
-        }
-
         /* Main Floating Control Dock */
         .controls-dock {
             position: absolute;
@@ -262,37 +260,6 @@
             border-radius: 4px;
         }
 
-        /* Drag Overlay */
-        #drop-zone {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 100;
-            background: rgba(10, 12, 16, 0.85);
-            backdrop-filter: blur(10px);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            border: 2px dashed var(--accent-color);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-        }
-
-        #drop-zone.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        #drop-zone p {
-            font-size: 18px;
-            font-weight: 500;
-            margin-top: 12px;
-        }
-
         /* Loading Indicator */
         #loader {
             position: absolute;
@@ -331,7 +298,7 @@
         /* Hint Overlay */
         .hint-toast {
             position: absolute;
-            bottom: 80px;
+            bottom: 20px;
             left: 20px;
             z-index: 10;
             padding: 8px 14px;
@@ -354,23 +321,15 @@
 <body>
     <div id="webgl-container"></div>
 
-    <!-- Header -->
-    <header class="glass-panel">
+    <!-- Header (Hidden) -->
+    <header class="glass-panel" style="display: none;">
         <h1>
-            GLB Viewer <span class="badge" id="model-name">test003rigged.glb</span>
+            ✨ HairPhysic <span class="badge" id="model-name">longhair-draco.glb</span>
         </h1>
     </header>
 
-    <!-- Top Right Actions -->
-    <div class="top-right-bar">
-        <label for="file-input" class="btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-            </svg>
-            Upload GLB
-        </label>
-        <input type="file" id="file-input" accept=".glb,.gltf">
-
+    <!-- Top Right Actions (Hidden) -->
+    <div class="top-right-bar" style="display: none;">
         <button id="btn-toggle-sidebar" class="btn">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M4 6h16M4 12h16M4 18h7" />
@@ -381,16 +340,6 @@
 
     <!-- Controls Dock -->
     <div class="controls-dock glass-panel">
-        <div class="shading-group"
-            style="display:flex; background:rgba(0,0,0,0.3); padding:3px; border-radius:8px; gap:4px; border:1px solid var(--panel-border);">
-            <button id="btn-shade-pbr" class="btn active" style="padding:6px 12px; font-size:12px;"
-                title="Original Textures & Materials">🎨 PBR</button>
-            <button id="btn-shade-clay" class="btn" style="padding:6px 12px; font-size:12px;"
-                title="Clay MatCap Shader for Motion & Form">🗿 Clay</button>
-            <button id="btn-shade-normals" class="btn" style="padding:6px 12px; font-size:12px;"
-                title="Surface Normals RGB">🌈 Normals</button>
-        </div>
-
         <button id="btn-toggle-bones" class="btn btn-bone">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <circle cx="6" cy="6" r="2" />
@@ -400,35 +349,10 @@
             </svg>
             Skeleton
         </button>
-
-        <button id="btn-toggle-wireframe" class="btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <polygon points="12 2 2 7 12 12 22 7 12 2" />
-                <polyline points="2 17 12 22 22 17" />
-                <polyline points="2 12 12 17 22 12" />
-            </svg>
-            Wireframe
-        </button>
-
-        <button id="btn-toggle-colliders" class="btn btn-collider" title="Show / hide collision volumes">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="12" cy="8" r="4" />
-                <path d="M8 14c-3 1-5 3-5 5h18c0-2-2-4-5-5" />
-                <ellipse cx="12" cy="19" rx="7" ry="2.5" />
-            </svg>
-            Colliders
-        </button>
-
-        <button id="btn-reset-cam" class="btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-            </svg>
-            Reset
-        </button>
     </div>
 
-    <!-- Bone Detail Sidebar -->
-    <aside id="sidebar" class="sidebar glass-panel collapsed">
+    <!-- Bone Detail Sidebar (Hidden) -->
+    <aside id="sidebar" class="sidebar glass-panel collapsed" style="display: none;">
         <div class="sidebar-header">
             <h2>Bone Hierarchy</h2>
             <span id="bone-count" class="badge"
@@ -450,14 +374,6 @@
         </div>
     </aside>
 
-    <!-- Drag & Drop Overlay -->
-    <div id="drop-zone">
-        <svg width="48" height="48" fill="none" stroke="var(--accent-color)" stroke-width="2" viewBox="0 0 24 24">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
-        </svg>
-        <p>Drop your GLB / GLTF file here</p>
-    </div>
-
     <!-- Loader Spinner -->
     <div id="loader">
         <div class="spinner"></div>
@@ -465,7 +381,7 @@
     </div>
 
     <div class="hint-toast glass-panel">
-        WASD: Move | SPACE: Jump | SHIFT: Sprint | Drag: Orbit | Scroll: Zoom | R: Reset
+        WASD: Move | SPACE: Jump | SHIFT: Sprint | Drag: Orbit | Scroll: Zoom
     </div>
 
     <!-- Application Script -->
@@ -473,10 +389,33 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
         import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
         import { ViewHelper } from 'three/addons/helpers/ViewHelper.js';
         import { HairPhysics } from './hairphysic.js';
         import { HairColliderHelper } from './hair-herlper.js';
+
+        const cBlue = 'color: #38bdf8; font-family: monospace; font-size: 11px; font-weight: bold; line-height: 1.25;';
+        const cPink = 'color: #ec4899; font-family: monospace; font-size: 11px; font-weight: bold; line-height: 1.25;';
+        const cText = 'color: #bae6fd; font-family: monospace; font-size: 11px; font-weight: 500;';
+        const cLink = 'color: #f472b6; font-family: monospace; font-size: 11px; font-weight: bold; text-decoration: underline;';
+
+        console.log(
+            '%c  ___               %c                  \n' +
+            '%c / __| __ _ _ __  %c_____ __ __ _ \n' +
+            '%c \\__ \\/ _` | \'  \\%c/ _ \\ V  V /   \\\n' +
+            '%c |___/\\__,_|_|_|_%c\\___/\\_/\\_/|_||_|\n' +
+            '%c─────────────────%c─────────────────\n' +
+            '%c ✨ Open for creative collaborations!\n' +
+            ' 🔗 Check out more of my work: %chttps://samown.com\n',
+            cBlue, cPink,
+            cBlue, cPink,
+            cBlue, cPink,
+            cBlue, cPink,
+            cBlue, cPink,
+            cText,
+            cLink
+        );
 
         // State Variables
         let scene, camera, renderer, controls, viewHelper;
@@ -489,7 +428,7 @@
         let isSkeletonVisible = false;
         let isWireframe = false;
         let selectedBoneNode = null;
-        let currentShadingMode = 'pbr';
+        let currentShadingMode = 'normals';
         const hairPhysics = new HairPhysics();
         let colliderHelper = null;   // HairColliderHelper — created on model load
         let isColliderVisible = false;
@@ -638,12 +577,11 @@
             });
 
             // 11. Load Default Model
-            loadGLBModel('./test003rigged.glb', 'test003rigged.glb');
+            loadGLBModel('./longhair-draco.glb', 'longhair-draco.glb');
 
             // 12. Event Listeners
             window.addEventListener('resize', onWindowResize);
             setupUIListeners();
-            setupDragAndDrop();
 
             // 13. Render Loop
             animate();
@@ -654,6 +592,9 @@
             modelNameBadge.textContent = filename;
 
             const loader = new GLTFLoader();
+            const dracoLoader = new DRACOLoader();
+            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+            loader.setDRACOLoader(dracoLoader);
             loader.load(
                 url,
                 (gltf) => {
@@ -713,10 +654,10 @@
                     controls.update();
 
                     // Update UI Stats & Sidebar
-                    statMeshes.textContent = meshCount;
-                    statVertices.textContent = vertCount.toLocaleString();
-                    boneCountBadge.textContent = `${bonesList.length} Bones`;
-                    populateBoneList();
+                    if (statMeshes) statMeshes.textContent = meshCount;
+                    if (statVertices) statVertices.textContent = vertCount.toLocaleString();
+                    if (boneCountBadge) boneCountBadge.textContent = `${bonesList.length} Bones`;
+                    if (boneListContainer) populateBoneList();
 
                     loaderElem.classList.add('hidden');
 
@@ -785,33 +726,7 @@
             controls.target.copy(worldPos);
         }
 
-        function resetCharacterPosition() {
-            characterRoot.position.set(0, 0, 0);
-            charPhysics.velocityY = 0;
-            charPhysics.isGrounded = true;
-            charPhysics.targetRotation = 0;
-            charPhysics.currentRotation = 0;
-            charPhysics.movementVelocity.set(0, 0, 0);
-            characterRoot.rotation.y = 0;
 
-            if (currentModel) {
-                const box = new THREE.Box3().setFromObject(currentModel);
-                const center = box.getCenter(new THREE.Vector3());
-                currentModel.position.x -= center.x;
-                currentModel.position.z -= center.z;
-                currentModel.position.y -= box.min.y;
-                currentModel.rotation.set(0, 0, 0);
-            }
-
-            if (hairPhysics) hairPhysics.reset();
-
-            camera.position.set(0, 2.2, 4.5);
-            controls.target.set(0, 1.2, 0);
-            controls.update();
-
-            if (boneHighlightMarker) boneHighlightMarker.visible = false;
-            document.querySelectorAll('.bone-item').forEach(el => el.classList.remove('selected'));
-        }
 
         // 3rd Person Character Controller & Movement Update
         function updateCharacter(delta) {
@@ -884,7 +799,7 @@
         function setupUIListeners() {
             // Skeleton Toggle
             const btnBones = document.getElementById('btn-toggle-bones');
-            btnBones.addEventListener('click', () => {
+            btnBones?.addEventListener('click', () => {
                 isSkeletonVisible = !isSkeletonVisible;
                 btnBones.classList.toggle('active', isSkeletonVisible);
                 if (skeletonHelper) {
@@ -894,7 +809,7 @@
 
             // Collider Debug Toggle
             const btnColliders = document.getElementById('btn-toggle-colliders');
-            btnColliders.addEventListener('click', () => {
+            btnColliders?.addEventListener('click', () => {
                 isColliderVisible = !isColliderVisible;
                 btnColliders.classList.toggle('active', isColliderVisible);
                 if (colliderHelper) colliderHelper.setVisible(isColliderVisible);
@@ -902,7 +817,7 @@
 
             // Wireframe Toggle
             const btnWire = document.getElementById('btn-toggle-wireframe');
-            btnWire.addEventListener('click', () => {
+            btnWire?.addEventListener('click', () => {
                 isWireframe = !isWireframe;
                 btnWire.classList.toggle('active', isWireframe);
                 if (currentModel) {
@@ -918,30 +833,19 @@
                 }
             });
 
-            // Reset Camera & Character View
-            document.getElementById('btn-reset-cam').addEventListener('click', resetCharacterPosition);
-
             // Toggle Sidebar
             const btnSidebar = document.getElementById('btn-toggle-sidebar');
-            btnSidebar.addEventListener('click', () => {
-                sidebar.classList.toggle('collapsed');
-                btnSidebar.classList.toggle('active', !sidebar.classList.contains('collapsed'));
+            btnSidebar?.addEventListener('click', () => {
+                sidebar?.classList.toggle('collapsed');
+                btnSidebar.classList.toggle('active', !sidebar?.classList.contains('collapsed'));
             });
 
             // Shading Mode Switcher
-            document.getElementById('btn-shade-pbr').addEventListener('click', () => applyShadingMode('pbr'));
-            document.getElementById('btn-shade-clay').addEventListener('click', () => applyShadingMode('clay'));
-            document.getElementById('btn-shade-normals').addEventListener('click', () => applyShadingMode('normals'));
+            document.getElementById('btn-shade-pbr')?.addEventListener('click', () => applyShadingMode('pbr'));
+            document.getElementById('btn-shade-clay')?.addEventListener('click', () => applyShadingMode('clay'));
+            document.getElementById('btn-shade-normals')?.addEventListener('click', () => applyShadingMode('normals'));
 
-            // File Upload Input
-            const fileInput = document.getElementById('file-input');
-            fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    const url = URL.createObjectURL(file);
-                    loadGLBModel(url, file.name);
-                }
-            });
+
 
             // Keyboard Navigation (WASD / Space / Shift / R)
             window.addEventListener('keydown', (e) => {
@@ -972,9 +876,7 @@
                     case 'ShiftRight':
                         moveState.sprint = true;
                         break;
-                    case 'KeyR':
-                        resetCharacterPosition();
-                        break;
+
                 }
             });
 
@@ -1028,38 +930,12 @@
                 }
             });
 
-            document.getElementById('btn-shade-pbr').classList.toggle('active', mode === 'pbr');
-            document.getElementById('btn-shade-clay').classList.toggle('active', mode === 'clay');
-            document.getElementById('btn-shade-normals').classList.toggle('active', mode === 'normals');
+            document.getElementById('btn-shade-pbr')?.classList.toggle('active', mode === 'pbr');
+            document.getElementById('btn-shade-clay')?.classList.toggle('active', mode === 'clay');
+            document.getElementById('btn-shade-normals')?.classList.toggle('active', mode === 'normals');
         }
 
-        function setupDragAndDrop() {
-            const dropZone = document.getElementById('drop-zone');
 
-            window.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('active');
-            });
-
-            dropZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('active');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('active');
-                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                    const file = e.dataTransfer.files[0];
-                    if (file.name.endsWith('.glb') || file.name.endsWith('.gltf')) {
-                        const url = URL.createObjectURL(file);
-                        loadGLBModel(url, file.name);
-                    } else {
-                        alert('Please drop a valid .glb or .gltf file.');
-                    }
-                }
-            });
-        }
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
