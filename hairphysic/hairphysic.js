@@ -1,4 +1,4 @@
-// hairphysic.js
+// hairphysic by samuel eisen
 //"A lightweight Verlet physics system that drives 3 dynamic bone chains of any length, 
 // mapping simulated particle positions back into bone quaternion rotations with sphere and capsule collisions."
 

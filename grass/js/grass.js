@@ -1,5 +1,5 @@
 /* ───────────────────────────────────────────────
-    INTERACTIVE GRASS LANDSCAPE (Camera Vision Frustum Span + Rolling Chunk Grid + GPU GLSL Shader)
+    INTERACTIVE GRASS LANDSCAPE (Camera Vision Frustum Span + Rolling Chunk Grid + GPU GLSL Shader) by samuel eisen
     createGrassLandscape · updateGrassPhysics · updateRollingGrid
     Depends on: scene, PAL, WORLD_WIDTH, WORLD_DEPTH, getGroundHeight
 ─────────────────────────────────────────────── */

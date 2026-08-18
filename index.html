@@ -31,9 +31,9 @@
 
     .container {
       width: 100%;
-      max-width: 620px;
+      max-width: 880px;
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(3, 1fr);
       gap: 24px;
     }
 
@@ -97,6 +97,17 @@
       background: radial-gradient(circle at 50% 0%, rgba(236, 72, 153, 0.12), transparent 70%);
     }
 
+    /* Lighting Card Hover */
+    .card.lighting:hover {
+      background: rgba(34, 28, 18, 0.85);
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(251, 191, 36, 0.15);
+    }
+
+    .card.lighting::before {
+      background: radial-gradient(circle at 50% 0%, rgba(251, 191, 36, 0.12), transparent 70%);
+    }
+
     .card .icon {
       font-size: 42px;
       line-height: 1;
@@ -115,10 +126,10 @@
       color: #ffffff;
     }
 
-    @media (max-width: 520px) {
+    @media (max-width: 720px) {
       .container {
         grid-template-columns: 1fr;
-        max-width: 300px;
+        max-width: 320px;
         gap: 16px;
       }
       .card {
@@ -137,6 +148,10 @@
     <a href="./hairphysic/" class="card hairphysic">
       <span class="icon">✨</span>
       <span class="title">hairphysic</span>
+    </a>
+    <a href="./lighting/" class="card lighting">
+      <span class="icon">💡</span>
+      <span class="title">lighting</span>
     </a>
   </div>
 </body>
