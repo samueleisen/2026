@@ -343,7 +343,6 @@ function createGrassLandscape(count = 5000) {
     updateRollingGrid(0, 0, 0, -1);
 
     scene.add(grassInstancedMesh);
-    console.log(`[grass] Created ${count} GPU grass blades with unified vision frustum.`);
 }
 
 /**

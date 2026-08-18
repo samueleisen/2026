@@ -47,12 +47,16 @@ const animations = {};
 let glbReady = false;
 
 // ── GLB filename ───────────────────────────────────────────────
-const PLAYER_GLB = 'firstmodel.glb';
+const PLAYER_GLB = 'firstmodel-draco.glb';
 
 // ─────────────────────────────────────────────────────────────
 //  Load
 // ─────────────────────────────────────────────────────────────
+const dracoLoader = new THREE.DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+
 const _loader = new THREE.GLTFLoader();
+_loader.setDRACOLoader(dracoLoader);
 _loader.load(
     PLAYER_GLB,
 
@@ -92,8 +96,6 @@ _loader.load(
                 }
             }
         });
-        const foundCount = window.ponytailBones.filter(Boolean).length;
-        console.log(`[player] Found ${foundCount}/5 ponytail bones for procedural physics.`);
 
         // 5. AnimationMixer — register every clip by lowercased name
         mixer = new THREE.AnimationMixer(model);
@@ -120,18 +122,10 @@ _loader.load(
         }
 
         glbReady = true;
-        console.log(
-            '[player] ' + PLAYER_GLB + ' ready. Clips: [' +
-            Object.keys(animations).join(', ') + ']'
-        );
     },
 
     /* onProgress */
-    function (xhr) {
-        if (xhr.total) {
-            console.log('[player] ' + Math.round(xhr.loaded / xhr.total * 100) + '% loaded');
-        }
-    },
+    undefined,
 
     /* onError */
     function (err) {
