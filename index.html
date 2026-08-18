@@ -7,49 +7,137 @@
   <title>Select Destination</title>
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌐</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      background-color: #121212;
-      color: #e0e0e0;
-      font-family: system-ui, -apple-system, sans-serif;
+      background-color: #0a0c10;
+      color: #f3f4f6;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      margin: 0;
+      padding: 24px;
+      overflow: hidden;
     }
 
     .container {
+      width: 100%;
+      max-width: 620px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+    }
+
+    .card {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-
-    .btn {
-      display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px 24px;
-      background-color: #242424;
-      color: #ffffff;
+      justify-content: center;
+      gap: 16px;
+      padding: 48px 28px;
+      background: rgba(18, 22, 30, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: #f3f4f6;
       text-decoration: none;
-      border-radius: 8px;
-      border: 1px solid #333;
-      font-size: 16px;
-      transition: background-color 0.2s, border-color 0.2s;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
     }
 
-    .btn:hover {
-      background-color: #333333;
-      border-color: #555;
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    /* Grass Card Hover */
+    .card.grass:hover {
+      background: rgba(22, 30, 26, 0.85);
+      border-color: rgba(52, 211, 153, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(52, 211, 153, 0.15);
+    }
+
+    .card.grass::before {
+      background: radial-gradient(circle at 50% 0%, rgba(52, 211, 153, 0.12), transparent 70%);
+    }
+
+    /* HairPhysic Card Hover */
+    .card.hairphysic:hover {
+      background: rgba(30, 22, 32, 0.85);
+      border-color: rgba(236, 72, 153, 0.4);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 24px rgba(236, 72, 153, 0.15);
+    }
+
+    .card.hairphysic::before {
+      background: radial-gradient(circle at 50% 0%, rgba(236, 72, 153, 0.12), transparent 70%);
+    }
+
+    .card .icon {
+      font-size: 42px;
+      line-height: 1;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+      transition: transform 0.25s ease;
+    }
+
+    .card:hover .icon {
+      transform: scale(1.12);
+    }
+
+    .card .title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #ffffff;
+    }
+
+    @media (max-width: 520px) {
+      .container {
+        grid-template-columns: 1fr;
+        max-width: 300px;
+        gap: 16px;
+      }
+      .card {
+        padding: 36px 20px;
+      }
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <a href="./grass/" class="btn">📁 grass</a>
-    <a href="./hairphysic/" class="btn">📁 hairphysic</a>
+    <a href="./grass/" class="card grass">
+      <span class="icon">🌿</span>
+      <span class="title">grass</span>
+    </a>
+    <a href="./hairphysic/" class="card hairphysic">
+      <span class="icon">✨</span>
+      <span class="title">hairphysic</span>
+    </a>
   </div>
 </body>
 
