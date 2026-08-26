@@ -1,12 +1,12 @@
 console.log(
     '%c' +
-    '  ___                         \n' +
-    ' / __| __ _ _ __  _____ __ __ _ \n' +
-    ' \\__ \\/ _` | \'  \\/ _ \\ V  V / \  \\\n' +
-    ' |___/\\__,_|_|_|_\\___/\\_/\\_/|_||_|\n' +
-    '──────────────────────────────────\n' +
-    ' Open for creative collaborations!\n' +
-    ' CHeck out more of my work: https://samown.com\n',
+    '  ___                       _       _             \n' +
+    ' / __| __ _ _ __  _  _  ___| | ___ (_)___ ___ _ _ \n' +
+    ' \\__ \\/ _` | \'  \\| || |/ -_) |/ -_)| (_-</ -_) \' \\\n' +
+    ' |___/\\__,_|_|_|_|\\_,_|\\___|_|\\___||_/__/\\___|_||_|\n' +
+    '──────────────────────────────────────────────────\n' +
+    ' ✨ Open for creative collaborations!\n' +
+    ' 🔗 Check out more of my work: https://samueleisen.com\n',
     'color: #e2d700ff; font-family: monospace; font-size: 11px; line-height: 1.3; font-weight: bold;'
 );
 
