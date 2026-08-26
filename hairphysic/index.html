@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HairPhysic </title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+    <title>GLB Model & Bone Viewer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -105,14 +103,14 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid var(--panel-border);
             color: var(--text-main);
-            padding: 10px 16px;
+            padding: 8px 13px;
             border-radius: 8px;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 500;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
             transition: all 0.2s ease;
         }
 
@@ -140,16 +138,189 @@
             box-shadow: 0 0 15px rgba(34, 211, 238, 0.45);
         }
 
+        .btn-particle.active {
+            background: #065f46;
+            border-color: #34d399;
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.45);
+        }
+
+        .btn-detect.active {
+            background: #7c3aed;
+            border-color: #a78bfa;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.45);
+        }
+
+        .btn-mini {
+            padding: 4px 7px;
+            font-size: 10.5px;
+            gap: 5px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .btn-mini svg {
+            width: 12px;
+            height: 12px;
+        }
+
+        .shading-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px;
+            border-radius: 8px;
+            gap: 4px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .shading-group .btn-mini {
+            justify-content: center;
+        }
+
+        #btn-shade-normals {
+            grid-column: span 2;
+        }
+
+        .visualizer-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 3px;
+            border-radius: 8px;
+            gap: 4px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .dock-sep {
+            width: 1px;
+            height: 28px;
+            background: var(--panel-border);
+            margin: 0 2px;
+        }
+
+        /* Chain Detect Modal */
+        #chain-detect-modal {
+            position: absolute;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 20;
+            width: 520px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: opacity 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #chain-detect-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(-50%) translateY(12px);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 13px;
+            font-weight: 600;
+            color: #a78bfa;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .modal-header .chain-badge {
+            font-size: 10px;
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            color: #c4b5fd;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 18px;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+            transition: color 0.15s;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+        }
+
+        #chain-json-output {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            color: #e5e7eb;
+            resize: vertical;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-apply-chains {
+            background: rgba(124, 58, 237, 0.2);
+            border-color: rgba(139, 92, 246, 0.4);
+            color: #c4b5fd;
+        }
+
+        .btn-apply-chains:hover {
+            background: rgba(124, 58, 237, 0.35);
+            border-color: #a78bfa;
+        }
+
+        .btn-copy-chains {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        #file-input {
+            display: none;
+        }
+
         /* Main Floating Control Dock */
         .controls-dock {
             position: absolute;
-            bottom: 24px;
+            bottom: 20px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%) scale(0.88);
+            transform-origin: bottom center;
             z-index: 10;
-            padding: 8px;
+            padding: 6px;
             display: flex;
-            gap: 8px;
+            align-items: center;
+            gap: 6px;
+            opacity: 0.55;
+            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .controls-dock:hover {
+            opacity: 1.0;
+            transform: translateX(-50%) scale(0.92);
         }
 
         /* Side Panel: Bone Tree & Details */
@@ -260,6 +431,37 @@
             border-radius: 4px;
         }
 
+        /* Drag Overlay */
+        #drop-zone {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            background: rgba(10, 12, 16, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--accent-color);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        #drop-zone.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        #drop-zone p {
+            font-size: 18px;
+            font-weight: 500;
+            margin-top: 12px;
+        }
+
         /* Loading Indicator */
         #loader {
             position: absolute;
@@ -321,15 +523,23 @@
 <body>
     <div id="webgl-container"></div>
 
-    <!-- Header (Hidden) -->
-    <header class="glass-panel" style="display: none;">
+    <!-- Header -->
+    <header class="glass-panel">
         <h1>
-            ✨ HairPhysic <span class="badge" id="model-name">longhair-draco.glb</span>
+            GLB Loaded <span class="badge" id="model-name">test004rigged.glb</span>
         </h1>
     </header>
 
-    <!-- Top Right Actions (Hidden) -->
-    <div class="top-right-bar" style="display: none;">
+    <!-- Top Right Actions -->
+    <div class="top-right-bar">
+        <label for="file-input" class="btn">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+            </svg>
+            Upload GLB
+        </label>
+        <input type="file" id="file-input" accept=".glb,.gltf">
+
         <button id="btn-toggle-sidebar" class="btn">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path d="M4 6h16M4 12h16M4 18h7" />
@@ -340,19 +550,82 @@
 
     <!-- Controls Dock -->
     <div class="controls-dock glass-panel">
-        <button id="btn-toggle-bones" class="btn btn-bone">
+        <!-- Shading Group: 1x1x2 Ratio -->
+        <div class="shading-group">
+            <button id="btn-shade-pbr" class="btn btn-mini" title="Original Textures & Materials">🎨 PBR</button>
+            <button id="btn-shade-clay" class="btn btn-mini" title="Clay MatCap Shader for Motion & Form">🗿
+                Clay</button>
+            <button id="btn-shade-normals" class="btn btn-mini active" title="Surface Normals RGB">🌈 Normals</button>
+        </div>
+
+        <div class="dock-sep"></div>
+
+        <!-- Packed 4-in-1 Visualizers -->
+        <div class="visualizer-group">
+            <button id="btn-toggle-bones" class="btn btn-mini btn-bone" title="Toggle Skeleton Overlay">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="6" cy="6" r="2" />
+                    <circle cx="18" cy="6" r="2" />
+                    <circle cx="12" cy="18" r="2" />
+                    <path d="M7.5 7.5l3 9M16.5 7.5l-3 9M8 6h8" />
+                </svg>
+                <span>Skeleton</span>
+            </button>
+
+            <button id="btn-toggle-wireframe" class="btn btn-mini" title="Toggle Wireframe Mesh">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polygon points="12 2 2 7 12 12 22 7 12 2" />
+                    <polyline points="2 17 12 22 22 17" />
+                    <polyline points="2 12 12 17 22 12" />
+                </svg>
+                <span>Wireframe</span>
+            </button>
+
+            <button id="btn-toggle-colliders" class="btn btn-mini btn-collider" title="Toggle Collision Volumes">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="12" cy="8" r="4" />
+                    <path d="M8 14c-3 1-5 3-5 5h18c0-2-2-4-5-5" />
+                    <ellipse cx="12" cy="19" rx="7" ry="2.5" />
+                </svg>
+                <span>Colliders</span>
+            </button>
+
+            <button id="btn-toggle-particles" class="btn btn-mini btn-particle" title="Toggle Live Physics Particles">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="5" cy="12" r="2.2" />
+                    <circle cx="12" cy="5" r="2.2" />
+                    <circle cx="19" cy="12" r="2.2" />
+                    <circle cx="12" cy="19" r="2.2" />
+                    <circle cx="12" cy="12" r="1.4" />
+                </svg>
+                <span>Particles</span>
+            </button>
+        </div>
+
+        <div class="dock-sep"></div>
+
+        <button id="btn-detect-chains" class="btn btn-detect"
+            title="Auto-detect hair bone chains from skeleton topology">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <circle cx="6" cy="6" r="2" />
-                <circle cx="18" cy="6" r="2" />
-                <circle cx="12" cy="18" r="2" />
-                <path d="M7.5 7.5l3 9M16.5 7.5l-3 9M8 6h8" />
+                <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z" />
+                <path d="M12 12v10M8 16l4 4 4-4" />
             </svg>
-            Skeleton
+            Detect Chains
+        </button>
+
+        <button id="btn-reset-cam" class="btn" title="Reset Character Position & Camera">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" viewBox="0 0 24 24">
+                <path d="M21 2v6h-6" />
+                <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+                <path d="M3 22v-6h6" />
+                <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+            </svg>
         </button>
     </div>
 
-    <!-- Bone Detail Sidebar (Hidden) -->
-    <aside id="sidebar" class="sidebar glass-panel collapsed" style="display: none;">
+    <!-- Bone Detail Sidebar -->
+    <aside id="sidebar" class="sidebar glass-panel collapsed">
         <div class="sidebar-header">
             <h2>Bone Hierarchy</h2>
             <span id="bone-count" class="badge"
@@ -374,6 +647,45 @@
         </div>
     </aside>
 
+    <!-- Chain Detect Modal -->
+    <div id="chain-detect-modal" class="glass-panel hidden">
+        <div class="modal-header">
+            <h3>
+                <svg width="14" height="14" fill="none" stroke="#a78bfa" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M12 2a5 5 0 1 0 0 10A5 5 0 0 0 12 2z" />
+                    <path d="M12 12v10M8 16l4 4 4-4" />
+                </svg>
+                Auto-Detected Hair Chains
+                <span class="chain-badge" id="chain-count-badge">0 chains</span>
+            </h3>
+            <button class="modal-close" id="btn-close-chain-modal">&times;</button>
+        </div>
+        <textarea id="chain-json-output" readonly spellcheck="false" placeholder="No model loaded yet..."></textarea>
+        <div class="modal-actions">
+            <button class="btn btn-copy-chains" id="btn-copy-chain-json">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <rect x="9" y="9" width="13" height="13" rx="2" />
+                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                </svg>
+                Copy JSON
+            </button>
+            <button class="btn btn-apply-chains" id="btn-apply-chains">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <polyline points="20 6 9 17 4 12" />
+                </svg>
+                Apply to Physics
+            </button>
+        </div>
+    </div>
+
+    <!-- Drag & Drop Overlay -->
+    <div id="drop-zone">
+        <svg width="48" height="48" fill="none" stroke="var(--accent-color)" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+        </svg>
+        <p>Drop your GLB / GLTF file here</p>
+    </div>
+
     <!-- Loader Spinner -->
     <div id="loader">
         <div class="spinner"></div>
@@ -381,7 +693,7 @@
     </div>
 
     <div class="hint-toast glass-panel">
-        WASD: Move | SPACE: Jump | SHIFT: Sprint | Drag: Orbit | Scroll: Zoom
+        WASD: Move | SPACE: Jump | SHIFT: Sprint | R: Reset
     </div>
 
     <!-- Application Script -->
@@ -389,33 +701,10 @@
         import * as THREE from 'three';
         import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
         import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-        import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
         import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
         import { ViewHelper } from 'three/addons/helpers/ViewHelper.js';
         import { HairPhysics } from './hairphysic.js';
-        import { HairColliderHelper } from './hair-herlper.js';
-
-        const cBlue = 'color: #38bdf8; font-family: monospace; font-size: 11px; font-weight: bold; line-height: 1.25;';
-        const cPink = 'color: #ec4899; font-family: monospace; font-size: 11px; font-weight: bold; line-height: 1.25;';
-        const cText = 'color: #bae6fd; font-family: monospace; font-size: 11px; font-weight: 500;';
-        const cLink = 'color: #f472b6; font-family: monospace; font-size: 11px; font-weight: bold; text-decoration: underline;';
-
-        console.log(
-            '%c  ___               %c                  \n' +
-            '%c / __| __ _ _ __  %c_____ __ __ _ \n' +
-            '%c \\__ \\/ _` | \'  \\%c/ _ \\ V  V /   \\\n' +
-            '%c |___/\\__,_|_|_|_%c\\___/\\_/\\_/|_||_|\n' +
-            '%c─────────────────%c─────────────────\n' +
-            '%c ✨ Open for creative collaborations!\n' +
-            ' 🔗 Check out more of my work: %chttps://samown.com\n',
-            cBlue, cPink,
-            cBlue, cPink,
-            cBlue, cPink,
-            cBlue, cPink,
-            cBlue, cPink,
-            cText,
-            cLink
-        );
+        import { HairColliderHelper, HairParticleHelper } from './hair-helper.js';
 
         // State Variables
         let scene, camera, renderer, controls, viewHelper;
@@ -431,7 +720,11 @@
         let currentShadingMode = 'normals';
         const hairPhysics = new HairPhysics();
         let colliderHelper = null;   // HairColliderHelper — created on model load
+        let particleHelper = null;   // HairParticleHelper — live Verlet particle overlay
         let isColliderVisible = false;
+        let isParticleVisible = false;
+        let currentHairConfig = null;
+        let lastDetectedConfig = null;
 
         // Character Movement & Physics State
         const moveState = {
@@ -496,7 +789,7 @@
 
             // 2. Camera Setup
             camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
-            camera.position.set(0, 2.2, 4.5);
+            camera.position.set(0, 1.5, 4.2);
 
             // 3. Renderer Setup with Calibrated Exposure
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -558,7 +851,7 @@
             controls.maxPolarAngle = Math.PI / 2 - 0.02;
             controls.minDistance = 1.0;
             controls.maxDistance = 25;
-            controls.target.set(0, 1.2, 0);
+            controls.target.set(0, 1.0, 0);
             controls.update();
 
             // 9. Bone Highlight Gizmo
@@ -577,11 +870,12 @@
             });
 
             // 11. Load Default Model
-            loadGLBModel('./longhair-draco.glb', 'longhair-draco.glb');
+            loadGLBModel('./test004rigged.glb', 'test004rigged.glb');
 
             // 12. Event Listeners
             window.addEventListener('resize', onWindowResize);
             setupUIListeners();
+            setupDragAndDrop();
 
             // 13. Render Loop
             animate();
@@ -592,12 +886,9 @@
             modelNameBadge.textContent = filename;
 
             const loader = new GLTFLoader();
-            const dracoLoader = new DRACOLoader();
-            dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
-            loader.setDRACOLoader(dracoLoader);
             loader.load(
                 url,
-                (gltf) => {
+                async (gltf) => {
                     // Remove previous model & skeleton
                     if (currentModel) {
                         characterRoot.remove(currentModel);
@@ -626,13 +917,13 @@
                         }
                     });
 
-                    // Center model base on root (Y = 0)
+                    // Center model base on root (Y = 0) once and preserve rest offset
                     const box = new THREE.Box3().setFromObject(currentModel);
                     const center = box.getCenter(new THREE.Vector3());
 
-                    currentModel.position.x -= center.x;
-                    currentModel.position.z -= center.z;
-                    currentModel.position.y -= box.min.y;
+                    const restOffset = new THREE.Vector3(-center.x, -box.min.y, -center.z);
+                    currentModel.position.copy(restOffset);
+                    currentModel.userData.restOffset = restOffset.clone();
 
                     characterRoot.add(currentModel);
                     characterRoot.updateMatrixWorld(true);
@@ -649,21 +940,26 @@
                     scene.add(skeletonHelper);
 
                     // Auto-adjust Camera
-                    camera.position.set(0, 2.2, 4.5);
-                    controls.target.set(0, 1.2, 0);
+                    camera.position.set(0, 1.5, 4.2);
+                    controls.target.set(0, 1.0, 0);
                     controls.update();
 
                     // Update UI Stats & Sidebar
-                    if (statMeshes) statMeshes.textContent = meshCount;
-                    if (statVertices) statVertices.textContent = vertCount.toLocaleString();
-                    if (boneCountBadge) boneCountBadge.textContent = `${bonesList.length} Bones`;
-                    if (boneListContainer) populateBoneList();
+                    statMeshes.textContent = meshCount;
+                    statVertices.textContent = vertCount.toLocaleString();
+                    boneCountBadge.textContent = `${bonesList.length} Bones`;
+                    populateBoneList();
 
                     loaderElem.classList.add('hidden');
 
                     // Initialize hair physics from lead module
                     hairPhysics.reset();
-                    hairPhysics.init(currentModel);
+                    currentHairConfig = await hairPhysics.fetchConfig('./hair-config.json');
+                    lastDetectedConfig = null;
+                    hairPhysics.init(currentModel, currentHairConfig);
+
+                    // Auto-fetch colliders from glb-collider.json (safe fallback to no colliders if not found)
+                    await hairPhysics.fetchColliders('./glb-collider.json');
 
                     // (Re-)create the collider debug helper for the new model
                     if (colliderHelper) {
@@ -673,6 +969,15 @@
                     colliderHelper = hairPhysics.createDebugHelper();
                     colliderHelper.setVisible(isColliderVisible);
                     scene.add(colliderHelper.group);
+
+                    // (Re-)create the particle overlay helper for the new model
+                    if (particleHelper) {
+                        scene.remove(particleHelper.group);
+                        particleHelper.dispose();
+                    }
+                    particleHelper = new HairParticleHelper(hairPhysics);
+                    particleHelper.setVisible(isParticleVisible);
+                    scene.add(particleHelper.group);
                 },
                 (xhr) => { },
                 (error) => {
@@ -726,12 +1031,52 @@
             controls.target.copy(worldPos);
         }
 
+        function resetCharacterPosition() {
+            characterRoot.position.set(0, 0, 0);
+            characterRoot.rotation.set(0, 0, 0);
+            charPhysics.velocityY = 0;
+            charPhysics.isGrounded = true;
+            charPhysics.targetRotation = 0;
+            charPhysics.currentRotation = 0;
+            charPhysics.walkCycle = 0;
+            charPhysics.movementVelocity.set(0, 0, 0);
 
+            if (currentModel && currentModel.userData && currentModel.userData.restOffset) {
+                currentModel.position.copy(currentModel.userData.restOffset);
+                currentModel.rotation.set(0, 0, 0);
+            }
+
+            characterRoot.updateMatrixWorld(true);
+
+            if (hairPhysics && currentModel) {
+                hairPhysics.reset();
+                const activeConfig = lastDetectedConfig || currentHairConfig;
+                hairPhysics.init(currentModel, activeConfig);
+
+                // Instantly sync visual helpers
+                if (colliderHelper) {
+                    colliderHelper.rebuild();
+                    colliderHelper.update();
+                }
+                if (particleHelper) {
+                    particleHelper.rebuild();
+                    particleHelper.update();
+                }
+            }
+
+            camera.position.set(0, 1.5, 4.2);
+            controls.target.set(0, 1.0, 0);
+            controls.update();
+
+            if (boneHighlightMarker) boneHighlightMarker.visible = false;
+            document.querySelectorAll('.bone-item').forEach(el => el.classList.remove('selected'));
+        }
 
         // 3rd Person Character Controller & Movement Update
         function updateCharacter(delta) {
             if (!currentModel) return;
 
+            const baseY = (currentModel.userData && currentModel.userData.restOffset) ? currentModel.userData.restOffset.y : 0;
             const inputX = (moveState.right ? 1 : 0) - (moveState.left ? 1 : 0);
             const inputZ = (moveState.backward ? 1 : 0) - (moveState.forward ? 1 : 0);
             const isMoving = inputX !== 0 || inputZ !== 0;
@@ -764,11 +1109,11 @@
                 charPhysics.walkCycle += delta * (moveState.sprint ? 14 : 9);
                 const bobY = Math.abs(Math.sin(charPhysics.walkCycle)) * 0.05;
                 const tiltZ = Math.sin(charPhysics.walkCycle) * 0.03;
-                currentModel.position.y = bobY;
+                currentModel.position.y = baseY + bobY;
                 currentModel.rotation.z = tiltZ;
             } else {
                 charPhysics.movementVelocity.set(0, 0, 0);
-                currentModel.position.y = THREE.MathUtils.lerp(currentModel.position.y, 0, delta * 10);
+                currentModel.position.y = THREE.MathUtils.lerp(currentModel.position.y, baseY, delta * 10);
                 currentModel.rotation.z = THREE.MathUtils.lerp(currentModel.rotation.z, 0, delta * 10);
             }
 
@@ -799,7 +1144,7 @@
         function setupUIListeners() {
             // Skeleton Toggle
             const btnBones = document.getElementById('btn-toggle-bones');
-            btnBones?.addEventListener('click', () => {
+            btnBones.addEventListener('click', () => {
                 isSkeletonVisible = !isSkeletonVisible;
                 btnBones.classList.toggle('active', isSkeletonVisible);
                 if (skeletonHelper) {
@@ -809,15 +1154,23 @@
 
             // Collider Debug Toggle
             const btnColliders = document.getElementById('btn-toggle-colliders');
-            btnColliders?.addEventListener('click', () => {
+            btnColliders.addEventListener('click', () => {
                 isColliderVisible = !isColliderVisible;
                 btnColliders.classList.toggle('active', isColliderVisible);
                 if (colliderHelper) colliderHelper.setVisible(isColliderVisible);
             });
 
+            // Particle Overlay Toggle
+            const btnParticles = document.getElementById('btn-toggle-particles');
+            btnParticles.addEventListener('click', () => {
+                isParticleVisible = !isParticleVisible;
+                btnParticles.classList.toggle('active', isParticleVisible);
+                if (particleHelper) particleHelper.setVisible(isParticleVisible);
+            });
+
             // Wireframe Toggle
             const btnWire = document.getElementById('btn-toggle-wireframe');
-            btnWire?.addEventListener('click', () => {
+            btnWire.addEventListener('click', () => {
                 isWireframe = !isWireframe;
                 btnWire.classList.toggle('active', isWireframe);
                 if (currentModel) {
@@ -833,19 +1186,91 @@
                 }
             });
 
+            // Reset Camera & Character View
+            document.getElementById('btn-reset-cam').addEventListener('click', resetCharacterPosition);
+
+            // Chain Auto-Detect
+            const btnDetect = document.getElementById('btn-detect-chains');
+            const chainModal = document.getElementById('chain-detect-modal');
+            const chainJsonOutput = document.getElementById('chain-json-output');
+            const chainCountBadge = document.getElementById('chain-count-badge');
+            let lastDetectedConfig = null;
+
+            btnDetect.addEventListener('click', () => {
+                if (!currentModel) {
+                    alert('Load a GLB model first.');
+                    return;
+                }
+                lastDetectedConfig = hairPhysics.autoDetectChains(currentModel);
+                const json = JSON.stringify(lastDetectedConfig, null, 2);
+                chainJsonOutput.value = json;
+                chainCountBadge.textContent = `${lastDetectedConfig.chains.length} chain${lastDetectedConfig.chains.length !== 1 ? 's' : ''}`;
+                chainModal.classList.remove('hidden');
+                btnDetect.classList.add('active');
+            });
+
+            document.getElementById('btn-close-chain-modal').addEventListener('click', () => {
+                chainModal.classList.add('hidden');
+                btnDetect.classList.remove('active');
+            });
+
+            document.getElementById('btn-copy-chain-json').addEventListener('click', () => {
+                if (!chainJsonOutput.value) return;
+                navigator.clipboard.writeText(chainJsonOutput.value).then(() => {
+                    const btn = document.getElementById('btn-copy-chain-json');
+                    const orig = btn.innerHTML;
+                    btn.innerHTML = '✅ Copied!';
+                    setTimeout(() => { btn.innerHTML = orig; }, 1800);
+                });
+            });
+
+            document.getElementById('btn-apply-chains').addEventListener('click', async () => {
+                if (!lastDetectedConfig || !currentModel) return;
+                hairPhysics.reset();
+                hairPhysics.init(currentModel, lastDetectedConfig);
+                await hairPhysics.fetchColliders('./glb-collider.json');
+                // Rebuild collider helper
+                if (colliderHelper) {
+                    scene.remove(colliderHelper.group);
+                    colliderHelper.dispose();
+                }
+                colliderHelper = hairPhysics.createDebugHelper();
+                colliderHelper.setVisible(isColliderVisible);
+                scene.add(colliderHelper.group);
+                // Rebuild particle helper
+                if (particleHelper) {
+                    scene.remove(particleHelper.group);
+                    particleHelper.dispose();
+                }
+                particleHelper = new HairParticleHelper(hairPhysics);
+                particleHelper.setVisible(isParticleVisible);
+                scene.add(particleHelper.group);
+                chainModal.classList.add('hidden');
+                btnDetect.classList.remove('active');
+                console.log(`[UI] Applied ${lastDetectedConfig.chains.length} detected chain(s) to physics.`);
+            });
+
             // Toggle Sidebar
             const btnSidebar = document.getElementById('btn-toggle-sidebar');
-            btnSidebar?.addEventListener('click', () => {
-                sidebar?.classList.toggle('collapsed');
-                btnSidebar.classList.toggle('active', !sidebar?.classList.contains('collapsed'));
+            btnSidebar.addEventListener('click', () => {
+                sidebar.classList.toggle('collapsed');
+                btnSidebar.classList.toggle('active', !sidebar.classList.contains('collapsed'));
             });
 
             // Shading Mode Switcher
-            document.getElementById('btn-shade-pbr')?.addEventListener('click', () => applyShadingMode('pbr'));
-            document.getElementById('btn-shade-clay')?.addEventListener('click', () => applyShadingMode('clay'));
-            document.getElementById('btn-shade-normals')?.addEventListener('click', () => applyShadingMode('normals'));
+            document.getElementById('btn-shade-pbr').addEventListener('click', () => applyShadingMode('pbr'));
+            document.getElementById('btn-shade-clay').addEventListener('click', () => applyShadingMode('clay'));
+            document.getElementById('btn-shade-normals').addEventListener('click', () => applyShadingMode('normals'));
 
-
+            // File Upload Input
+            const fileInput = document.getElementById('file-input');
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const url = URL.createObjectURL(file);
+                    loadGLBModel(url, file.name);
+                }
+            });
 
             // Keyboard Navigation (WASD / Space / Shift / R)
             window.addEventListener('keydown', (e) => {
@@ -876,7 +1301,9 @@
                     case 'ShiftRight':
                         moveState.sprint = true;
                         break;
-
+                    case 'KeyR':
+                        resetCharacterPosition();
+                        break;
                 }
             });
 
@@ -930,12 +1357,38 @@
                 }
             });
 
-            document.getElementById('btn-shade-pbr')?.classList.toggle('active', mode === 'pbr');
-            document.getElementById('btn-shade-clay')?.classList.toggle('active', mode === 'clay');
-            document.getElementById('btn-shade-normals')?.classList.toggle('active', mode === 'normals');
+            document.getElementById('btn-shade-pbr').classList.toggle('active', mode === 'pbr');
+            document.getElementById('btn-shade-clay').classList.toggle('active', mode === 'clay');
+            document.getElementById('btn-shade-normals').classList.toggle('active', mode === 'normals');
         }
 
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
 
+            window.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('active');
+            });
+
+            dropZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('active');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    const file = e.dataTransfer.files[0];
+                    if (file.name.endsWith('.glb') || file.name.endsWith('.gltf')) {
+                        const url = URL.createObjectURL(file);
+                        loadGLBModel(url, file.name);
+                    } else {
+                        alert('Please drop a valid .glb or .gltf file.');
+                    }
+                }
+            });
+        }
 
         function onWindowResize() {
             camera.aspect = window.innerWidth / window.innerHeight;
@@ -958,6 +1411,9 @@
 
                 // Sync collider debug meshes with live physics state
                 if (colliderHelper && isColliderVisible) colliderHelper.update();
+
+                // Sync live particle overlay
+                if (particleHelper && isParticleVisible) particleHelper.update();
             }
 
             // 3. Update ViewHelper animation or OrbitControls

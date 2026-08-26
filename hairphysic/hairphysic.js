@@ -1,4 +1,4 @@
-// hairphysic by samuel eisen
+// hairphysic.js
 //"A lightweight Verlet physics system that drives 3 dynamic bone chains of any length, 
 // mapping simulated particle positions back into bone quaternion rotations with sphere and capsule collisions."
 
@@ -6,7 +6,7 @@
 // Simulates depth 3+ hair bones with gravity + collision while keeping depth ≤ 2 untouched.
 
 import * as THREE from 'three';
-import { HairColliderHelper } from './hair-herlper.js';
+import { HairColliderHelper } from './hair-helper.js';
 
 export { HairColliderHelper };
 
@@ -20,10 +20,17 @@ export { HairColliderHelper };
 const _worldPos = new THREE.Vector3();
 const _worldDir = new THREE.Vector3();
 const _localDir = new THREE.Vector3();
-const _up = new THREE.Vector3(0, 1, 0);
-// Temporaries for rotation-aware collider offset computation
-const _headQuat = new THREE.Quaternion();
+// NOTE: The old module-level _up constant has been removed.
+// Each HairChain now holds its own this.boneForward (set from config.boneAxis)
+// to support rigs that orient bones along axes other than +Y.
+// Temporaries for collider transform computation
 const _offsetVec = new THREE.Vector3();
+const _rootQuat = new THREE.Quaternion();
+
+// ==========================================
+// Default Collider Configuration (empty by default)
+// ==========================================
+export const DEFAULT_COLLIDERS = [];
 
 // ==========================================
 // Verlet Particle
@@ -86,16 +93,32 @@ class DistanceConstraint {
 // ==========================================
 class HairChain {
     /**
-     * @param {THREE.Bone} anchorBone  - The depth-2 bone (e.g. chair2). Read-only, never modified.
-     * @param {THREE.Bone[]} physicsBones - Depth 3+ bones [chair3, chair4, ...]. We set their quaternions.
+     * @param {THREE.Bone} anchorBone  - The depth-1 bone (e.g. chair1). Read-only parent reference, never modified.
+     * @param {THREE.Bone[]} physicsBones - Depth 2+ bones [chair2, chair3, ...]. We set their quaternions.
+     * @param {string} [boneAxis='+Y']  - Local axis the bone points along. One of '+Y','−Y','+X','−X','+Z','−Z'.
+     *   Determines which local-space direction is mapped to the simulated direction vector in writeBack().
+     *   Defaults to '+Y' (the standard Blender/Three.js bone convention).
      */
-    constructor(anchorBone, physicsBones) {
+    constructor(anchorBone, physicsBones, boneAxis = '+Y') {
         this.anchorBone = anchorBone;
         this.physicsBones = physicsBones;
         this.particles = [];
         this.constraints = [];
 
-        // FIX #3: Per-chain quaternion temporaries — eliminates shared module-level
+        // Per-chain bone forward direction derived from boneAxis config.
+        // Used in writeBack() instead of the module-level _up constant so that
+        // rigs that orient bones along a different local axis work correctly.
+        this.boneForward = new THREE.Vector3();
+        switch (boneAxis) {
+            case '+X': this.boneForward.set(1, 0, 0); break;
+            case '-X': this.boneForward.set(-1, 0, 0); break;
+            case '+Z': this.boneForward.set(0, 0, 1); break;
+            case '-Z': this.boneForward.set(0, 0, -1); break;
+            case '-Y': this.boneForward.set(0, -1, 0); break;
+            default: this.boneForward.set(0, 1, 0); break; // '+Y'
+        }
+
+        // Per-chain quaternion temporaries — eliminates shared module-level
         // singleton mutation. Safe even if multiple HairChain instances exist.
         this._parentWorldQuat = new THREE.Quaternion();
         this._invParentQuat = new THREE.Quaternion();
@@ -222,8 +245,10 @@ class HairChain {
             this._invParentQuat.copy(this._parentWorldQuat).invert();
             _localDir.copy(_worldDir).applyQuaternion(this._invParentQuat);
 
-            // Quaternion that rotates local Y-axis to this direction
-            bone.quaternion.setFromUnitVectors(_up, _localDir);
+            // Quaternion that rotates the bone's forward axis to this direction.
+            // Uses per-chain boneForward (set from config.boneAxis) rather than the
+            // module-level _up so that non-+Y rigs produce correct rotations.
+            bone.quaternion.setFromUnitVectors(this.boneForward, _localDir);
 
             // Accumulate world quaternion for next bone in chain
             // next parent world quat = current parent world quat × this bone's local quat
@@ -236,143 +261,204 @@ class HairChain {
 // HairPhysics — main manager (exported)
 // ==========================================
 export class HairPhysics {
-    constructor() {
+    constructor(collidersData = null) {
         this.chains = [];
         this.config = {
             gravity: -9.8,
-            // damping [0 – 1]: velocity retention multiplier per frame (Verlet drag).
-            //   0.98 = low drag / more wobble / oscillations linger
-            //   0.92 = higher drag / settles quickly / less bounce and wobble
-            //   0.85 = very stiff air resistance / heavy viscous drag
             damping: 0.94,
             substeps: 10,
-            // inertia [0 – 1]: how sluggishly the pinned root follows the head bone.
-            //   0.0 = instant hard-snap (original behaviour)
-            //   0.3 = light smoothing — good starting point
-            //   0.7 = heavy lag, hair feels stiff / slow to react
-            // Note: values above ~0.8 can make the root visibly detach from the scalp.
             inertia: 0.5,
         };
 
-        // Collision shapes (world-space offsets from head bone)
-        // Tuned for test003rigged.glb (armature scale ~0.45)
-        this.colliderConfig = {
-            headSphere: {
-                offset: { x: 0, y: 0.2, z: 0 },
-                radius: 0.3,
-            },
-            bodyCapsule: {
-                topOffset: { x: 0, y: 0.05, z: 0.03 },
-                bottomOffset: { x: 0, y: -0.75, z: 0.03 },
-                radius: 0.3,
-            },
-            // Horizontal arm capsules — T-pose shoulder-to-forearm segments.
-            // Offsets are in head-bone LOCAL space and rotate with the character.
-            // Positive local X = character's right in rest/T-pose.
-            leftArmCapsule: {
-                innerOffset: { x: -0.25, y: -0.15, z: 0.0 },
-                outerOffset: { x: -0.75, y: -0.15, z: 0.0 },
-                radius: 0.15,
-            },
-            rightArmCapsule: {
-                innerOffset: { x: 0.25, y: -0.15, z: 0.0 },
-                outerOffset: { x: 0.75, y: -0.15, z: 0.0 },
-                radius: 0.15,
-            },
-        };
-
-        // Runtime collider state (world-space positions, updated each frame)
-        // All capsule objects share the precomputed-axis structure:
-        //   ax/ay/az = start point, bx/by/bz = end point
-        //   abx/aby/abz = axis vector (b - a), abLenSq = |ab|², rSq = radius²
-        this._headBone = null;
-        this._headSphere = { cx: 0, cy: 0, cz: 0, radius: 0, rSq: 0 };
-        this._bodyCapsule = { ax: 0, ay: 0, az: 0, bx: 0, by: 0, bz: 0, radius: 0, abx: 0, aby: 0, abz: 0, abLenSq: 0, rSq: 0 };
-        this._leftArmCapsule = { ax: 0, ay: 0, az: 0, bx: 0, by: 0, bz: 0, radius: 0, abx: 0, aby: 0, abz: 0, abLenSq: 0, rSq: 0 };
-        this._rightArmCapsule = { ax: 0, ay: 0, az: 0, bx: 0, by: 0, bz: 0, radius: 0, abx: 0, aby: 0, abz: 0, abLenSq: 0, rSq: 0 };
+        this.colliderDefs = collidersData || DEFAULT_COLLIDERS;
+        this.colliders = []; // compiled runtime colliders
+        this.modelRoot = null;
+        this.lastConfig = null;
 
         this.initialized = false;
         this._accumulator = 0; // Time accumulator for fixed-step integration
     }
 
+    /** Set or replace collider definitions (e.g. from glb-collider.json). */
+    loadColliders(jsonDefs) {
+        this.colliderDefs = Array.isArray(jsonDefs) ? jsonDefs : [];
+        this._buildColliders();
+        this._updateColliders();
+    }
+
+    /**
+     * Fetch hair chain definitions from a JSON file URL (e.g. './hair-config.json').
+     * If the file does not exist (404, network error) or contains invalid data,
+     * it safely returns null without throwing.
+     *
+     * @param {string} [url='./hair-config.json']
+     * @returns {Promise<object|null>}
+     */
+    async fetchConfig(url = './hair-config.json') {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                console.warn(`[HairPhysics] Hair config file not found at '${url}' (${res.status}).`);
+                return null;
+            }
+            const data = await res.json();
+            return data && typeof data === 'object' ? data : null;
+        } catch (err) {
+            console.warn(`[HairPhysics] Could not load hair config from '${url}':`, err.message);
+            return null;
+        }
+    }
+
+    /**
+     * Fetch collider definitions from a JSON file URL (e.g. './glb-collider.json').
+     * If the file does not exist (404, network error) or contains invalid data,
+     * it safely falls back to loading no colliders ([]) without throwing.
+     *
+     * @param {string} [url='./glb-collider.json']
+     * @returns {Promise<Array>} The loaded colliders array (or [] if failed).
+     */
+    async fetchColliders(url = './glb-collider.json') {
+        try {
+            const res = await fetch(url);
+            if (!res.ok) {
+                console.warn(`[HairPhysics] Collider file not found at '${url}' (${res.status}). Loaded 0 colliders.`);
+                this.loadColliders([]);
+                return [];
+            }
+            const data = await res.json();
+            if (Array.isArray(data)) {
+                this.loadColliders(data);
+                return data;
+            } else {
+                console.warn(`[HairPhysics] Invalid collider data in '${url}' (expected array). Loaded 0 colliders.`);
+                this.loadColliders([]);
+                return [];
+            }
+        } catch (err) {
+            console.warn(`[HairPhysics] Could not load colliders from '${url}': ${err.message}. Loaded 0 colliders.`);
+            this.loadColliders([]);
+            return [];
+        }
+    }
+
+    _buildColliders() {
+        this.colliders = [];
+        for (const def of this.colliderDefs) {
+            const pos = def.position || { x: 0, y: 0, z: 0 };
+            const type = (def.type || 'sphere').toLowerCase();
+            const radius = typeof def.radius === 'number' ? def.radius : 0.2;
+
+            if (type === 'capsule') {
+                const q = def.quaternion || { x: 0, y: 0, z: 0, w: 1 };
+                const height = typeof def.height === 'number' ? def.height : 1.0;
+                this.colliders.push({
+                    name: def.name || 'Capsule',
+                    type: 'capsule',
+                    localPosition: new THREE.Vector3(pos.x, pos.y, pos.z),
+                    localQuat: new THREE.Quaternion(q.x, q.y, q.z, q.w),
+                    radius,
+                    height,
+                    rSq: radius * radius,
+                    // Runtime world state
+                    worldPos: new THREE.Vector3(),
+                    worldQuat: new THREE.Quaternion(),
+                    ax: 0, ay: 0, az: 0,
+                    bx: 0, by: 0, bz: 0,
+                    abx: 0, aby: 0, abz: 0,
+                    abLenSq: 0,
+                });
+            } else {
+                this.colliders.push({
+                    name: def.name || 'Sphere',
+                    type: 'sphere',
+                    localPosition: new THREE.Vector3(pos.x, pos.y, pos.z),
+                    radius,
+                    rSq: radius * radius,
+                    // Runtime world state
+                    worldPos: new THREE.Vector3(),
+                    cx: 0, cy: 0, cz: 0,
+                });
+            }
+        }
+    }
+
     /** Clear all chains and mark as uninitialized. */
     reset() {
         this.chains = [];
-        this._headBone = null;
+        this.modelRoot = null;
         this.initialized = false;
         this._accumulator = 0;
     }
 
     /**
-     * Initialize hair physics from a loaded GLTF scene and bone.json data.
+     * Initialize hair physics from a loaded GLTF scene.
+     *
      * @param {THREE.Object3D} gltfScene - The loaded GLTF scene root.
-     * @param {Array} boneJsonData - Parsed bone.json array (kept for future use).
+     * @param {object|null}    [config]  - Data-driven chain config (e.g. from hair-config.json).
+     *   Shape: { chains: [{ anchor: string, bones: string[], boneAxis?: string }] }
+     * @param {Array|null}     [colliderDefs] - Optional collider definitions array (overrides loaded colliders).
      */
-    init(gltfScene, boneJsonData) {
+    init(gltfScene, config = null, colliderDefs = null) {
         this.chains = [];
+        this.modelRoot = gltfScene;
 
-        // Chain definitions:
-        //   anchor = depth-2 bone (untouched, provides pinned position)
-        //   physics = depth 3 through end (bones we simulate)
-        const chainDefs = [
-            // Center back hair
-            { prefix: 'chair', anchor: 'chair2', start: 3, end: 8 },
-            // Left/right side center hair (new in test003)
-            { prefix: 'lchair', anchor: 'lchair2', start: 3, end: 8 },
-            { prefix: 'rchair', anchor: 'rchair2', start: 3, end: 8 },
-            // Left/right outer hair
-            { prefix: 'lhair', anchor: 'lhair2', start: 3, end: 9 },
-            { prefix: 'rhair', anchor: 'rhair2', start: 3, end: 9 },
-        ];
+        const chainConfig = config || this.lastConfig;
+        this.lastConfig = chainConfig;
 
         // Collect all bones from the scene graph
         const sceneBones = {};
         gltfScene.traverse(node => {
-            if (node.isBone) {
-                sceneBones[node.name] = node;
-            }
+            if (node.isBone) sceneBones[node.name] = node;
         });
 
-        // Find head bone for collision
-        this._headBone = sceneBones['head'] || null;
-        if (!this._headBone) {
-            console.warn('[HairPhysics] Head bone not found — collisions disabled.');
-        }
-
-        // Ensure world matrices are current before reading rest positions
+        // Ensure world matrices are current before reading rest positions.
         gltfScene.updateMatrixWorld(true);
 
-        for (const def of chainDefs) {
-            const anchorBone = sceneBones[def.anchor];
-            if (!anchorBone) {
-                console.warn(`[HairPhysics] Anchor bone '${def.anchor}' not found, skipping chain.`);
-                continue;
-            }
-
-            const physicsBones = [];
-            for (let i = def.start; i <= def.end; i++) {
-                const name = def.prefix + i;
-                const bone = sceneBones[name];
-                if (bone) {
-                    physicsBones.push(bone);
-                } else {
-                    console.warn(`[HairPhysics] Bone '${name}' not found, chain truncated.`);
-                    break;
+        if (chainConfig && Array.isArray(chainConfig.chains) && chainConfig.chains.length > 0) {
+            for (const chainDef of chainConfig.chains) {
+                const anchorBone = sceneBones[chainDef.anchor];
+                if (!anchorBone) {
+                    console.warn(`[HairPhysics] Anchor bone '${chainDef.anchor}' not found, skipping chain.`);
+                    continue;
                 }
-            }
 
-            if (physicsBones.length < 2) {
-                console.warn(`[HairPhysics] Chain '${def.prefix}' needs ≥2 physics bones, skipping.`);
-                continue;
-            }
+                const physicsBones = [];
+                for (const boneName of (chainDef.bones || [])) {
+                    const bone = sceneBones[boneName];
+                    if (bone) {
+                        physicsBones.push(bone);
+                    } else {
+                        console.warn(`[HairPhysics] Bone '${boneName}' not found, chain truncated.`);
+                        break;
+                    }
+                }
 
-            this.chains.push(new HairChain(anchorBone, physicsBones));
+                if (physicsBones.length < 2) {
+                    console.warn(`[HairPhysics] Chain '${chainDef.anchor}' needs ≥2 physics bones, skipping.`);
+                    continue;
+                }
+
+                this.chains.push(new HairChain(anchorBone, physicsBones, chainDef.boneAxis || '+Y'));
+            }
+        } else {
+            console.info('[HairPhysics] No hair chain config provided. Initialized with 0 chains.');
         }
 
-        // Initialize collider positions
+        // ── Collider setup ───────────────────────────────────────────────────────
+        // If external collider defs were provided (e.g. from the auto-collider
+        // generator or an imported hair-setup.json), use them in place of
+        // DEFAULT_COLLIDERS. The runtime collider format is unchanged.
+        if (colliderDefs && Array.isArray(colliderDefs) && colliderDefs.length > 0) {
+            this.colliderDefs = colliderDefs;
+        }
+
+        this._buildColliders();
         this._updateColliders();
 
         this.initialized = this.chains.length > 0;
+        console.log(`[HairPhysics] Initialized ${this.chains.length} hair chains ` +
+            `(${this.chains.reduce((s, c) => s + c.particles.length, 0)} total particles). ` +
+            `Colliders: ${this.colliders.length} loaded.`);
     }
 
     // ------------------------------------------
@@ -380,108 +466,75 @@ export class HairPhysics {
     // ------------------------------------------
 
     /**
-     * Update collider world positions from head bone.
-     * Offsets are rotated by the head bone's world quaternion so the colliders
-     * always follow the character's facing direction rather than being fixed in
-     * world-space cardinal directions.
+     * Update collider world positions and orientations from model root.
      */
     _updateColliders() {
-        if (!this._headBone) return;
+        if (!this.modelRoot) return;
 
-        this._headBone.getWorldPosition(_worldPos);
-        const hx = _worldPos.x;
-        const hy = _worldPos.y;
-        const hz = _worldPos.z;
+        this.modelRoot.getWorldQuaternion(_rootQuat);
 
-        // Get head bone world rotation — used to rotate local offsets into world space
-        this._headBone.getWorldQuaternion(_headQuat);
+        for (const c of this.colliders) {
+            // Transform local center to world position
+            c.worldPos.copy(c.localPosition).applyMatrix4(this.modelRoot.matrixWorld);
 
-        // Head sphere — rotate local offset by head bone orientation
-        const hs = this.colliderConfig.headSphere;
-        _offsetVec.set(hs.offset.x, hs.offset.y, hs.offset.z).applyQuaternion(_headQuat);
-        this._headSphere.cx = hx + _offsetVec.x;
-        this._headSphere.cy = hy + _offsetVec.y;
-        this._headSphere.cz = hz + _offsetVec.z;
-        this._headSphere.radius = hs.radius;
-        this._headSphere.rSq = hs.radius * hs.radius;
+            if (c.type === 'sphere') {
+                c.cx = c.worldPos.x;
+                c.cy = c.worldPos.y;
+                c.cz = c.worldPos.z;
+                c.rSq = c.radius * c.radius;
+            } else if (c.type === 'capsule') {
+                c.worldQuat.copy(_rootQuat).multiply(c.localQuat);
 
-        // Body capsule — rotate both endpoint offsets by head bone orientation
-        const bc = this.colliderConfig.bodyCapsule;
-        _offsetVec.set(bc.topOffset.x, bc.topOffset.y, bc.topOffset.z).applyQuaternion(_headQuat);
-        this._bodyCapsule.ax = hx + _offsetVec.x;
-        this._bodyCapsule.ay = hy + _offsetVec.y;
-        this._bodyCapsule.az = hz + _offsetVec.z;
-        _offsetVec.set(bc.bottomOffset.x, bc.bottomOffset.y, bc.bottomOffset.z).applyQuaternion(_headQuat);
-        this._bodyCapsule.bx = hx + _offsetVec.x;
-        this._bodyCapsule.by = hy + _offsetVec.y;
-        this._bodyCapsule.bz = hz + _offsetVec.z;
-        this._bodyCapsule.radius = bc.radius;
-        this._bodyCapsule.rSq = bc.radius * bc.radius;
-        this._bodyCapsule.abx = this._bodyCapsule.bx - this._bodyCapsule.ax;
-        this._bodyCapsule.aby = this._bodyCapsule.by - this._bodyCapsule.ay;
-        this._bodyCapsule.abz = this._bodyCapsule.bz - this._bodyCapsule.az;
-        this._bodyCapsule.abLenSq = this._bodyCapsule.abx * this._bodyCapsule.abx
-            + this._bodyCapsule.aby * this._bodyCapsule.aby
-            + this._bodyCapsule.abz * this._bodyCapsule.abz;
+                // Capsule segment half-height along local Y
+                const halfH = Math.max(0.0001, c.height * 0.5);
+                _offsetVec.set(0, halfH, 0).applyQuaternion(c.worldQuat);
 
-        // Left arm capsule — shoulder (inner) to forearm (outer), local -X side
-        this._fillCapsuleState(this.colliderConfig.leftArmCapsule, this._leftArmCapsule, hx, hy, hz);
-        // Right arm capsule — mirror on local +X side
-        this._fillCapsuleState(this.colliderConfig.rightArmCapsule, this._rightArmCapsule, hx, hy, hz);
-    }
+                c.ax = c.worldPos.x - _offsetVec.x;
+                c.ay = c.worldPos.y - _offsetVec.y;
+                c.az = c.worldPos.z - _offsetVec.z;
 
-    /**
-     * Shared helper: rotate inner/outer offsets by _headQuat and write world-space
-     * positions + precomputed axis into a runtime capsule state object.
-     * @param {{ innerOffset, outerOffset, radius }} cfg  - Config entry from colliderConfig
-     * @param {{ ax,ay,az,bx,by,bz,... }}           state - Runtime state object to write
-     * @param {number} hx - Head bone world X
-     * @param {number} hy - Head bone world Y
-     * @param {number} hz - Head bone world Z
-     */
-    _fillCapsuleState(cfg, state, hx, hy, hz) {
-        _offsetVec.set(cfg.innerOffset.x, cfg.innerOffset.y, cfg.innerOffset.z).applyQuaternion(_headQuat);
-        state.ax = hx + _offsetVec.x;
-        state.ay = hy + _offsetVec.y;
-        state.az = hz + _offsetVec.z;
-        _offsetVec.set(cfg.outerOffset.x, cfg.outerOffset.y, cfg.outerOffset.z).applyQuaternion(_headQuat);
-        state.bx = hx + _offsetVec.x;
-        state.by = hy + _offsetVec.y;
-        state.bz = hz + _offsetVec.z;
-        state.radius = cfg.radius;
-        state.rSq = cfg.radius * cfg.radius;
-        state.abx = state.bx - state.ax;
-        state.aby = state.by - state.ay;
-        state.abz = state.bz - state.az;
-        state.abLenSq = state.abx * state.abx + state.aby * state.aby + state.abz * state.abz;
+                c.bx = c.worldPos.x + _offsetVec.x;
+                c.by = c.worldPos.y + _offsetVec.y;
+                c.bz = c.worldPos.z + _offsetVec.z;
+
+                c.abx = c.bx - c.ax;
+                c.aby = c.by - c.ay;
+                c.abz = c.bz - c.az;
+                c.abLenSq = c.abx * c.abx + c.aby * c.aby + c.abz * c.abz;
+                c.rSq = c.radius * c.radius;
+            }
+        }
     }
 
     /**
      * Push a particle outside all collision shapes.
-     * Reads precomputed capsule axis / rSq values from _updateColliders() — FIX #4.
-     * The single this._headBone guard is checked once up front — FIX #7.
      */
     _resolveCollisions(p) {
-        if (!this._headBone) return;
+        for (const c of this.colliders) {
+            if (c.type === 'sphere') {
+                this._resolveSphere(p, c);
+            } else if (c.type === 'capsule') {
+                this._resolveCapsule(p, c);
+            }
+        }
+    }
 
-        // --- Head sphere collision ---
-        const s = this._headSphere;
+    /**
+     * Push particle p outside one sphere collider.
+     */
+    _resolveSphere(p, s) {
         const sdx = p.x - s.cx;
         const sdy = p.y - s.cy;
         const sdz = p.z - s.cz;
         const sDistSq = sdx * sdx + sdy * sdy + sdz * sdz;
 
         if (sDistSq < s.rSq && sDistSq > 0.000001) {
-            // Particle is inside sphere — project to surface
             const dist = Math.sqrt(sDistSq);
             const factor = s.radius / dist;
             p.x = s.cx + sdx * factor;
             p.y = s.cy + sdy * factor;
             p.z = s.cz + sdz * factor;
 
-            // FIX: Also project old position if inside sphere.
-            // Prevents Verlet velocity from pointing back into the collider,
-            // which causes jitter/bounce instead of smooth sliding.
             const odx = p.oldX - s.cx;
             const ody = p.oldY - s.cy;
             const odz = p.oldZ - s.cz;
@@ -494,30 +547,20 @@ export class HairPhysics {
                 p.oldZ = s.cz + odz * oFactor;
             }
         }
-
-        // --- Capsule collisions (body + arms) ---
-        // Each call to _resolveCapsule handles one capsule: projection + velocity fix.
-        this._resolveCapsule(p, this._bodyCapsule);
-        this._resolveCapsule(p, this._leftArmCapsule);
-        this._resolveCapsule(p, this._rightArmCapsule);
     }
 
     /**
      * Push particle p outside one capsule collider.
-     * Includes old-position velocity correction (same fix as sphere) to prevent
-     * phantom inward Verlet velocity causing jitter after a push.
      * @param {Particle} p   - Particle to resolve.
-     * @param {object}   cap - Precomputed capsule state from _fillCapsuleState().
+     * @param {object}   cap - Capsule state from _updateColliders().
      */
     _resolveCapsule(p, cap) {
-        // Project particle onto capsule axis, clamped to [0, 1]
         const apx = p.x - cap.ax;
         const apy = p.y - cap.ay;
         const apz = p.z - cap.az;
         let t = (apx * cap.abx + apy * cap.aby + apz * cap.abz) / (cap.abLenSq || 0.0001);
         t = Math.max(0, Math.min(1, t));
 
-        // Closest point on capsule axis segment
         const ccx = cap.ax + cap.abx * t;
         const ccy = cap.ay + cap.aby * t;
         const ccz = cap.az + cap.abz * t;
@@ -528,15 +571,12 @@ export class HairPhysics {
         const cDistSq = cdx * cdx + cdy * cdy + cdz * cdz;
 
         if (cDistSq < cap.rSq && cDistSq > 0.000001) {
-            // Push current position to surface
             const dist = Math.sqrt(cDistSq);
             const factor = cap.radius / dist;
             p.x = ccx + cdx * factor;
             p.y = ccy + cdy * factor;
             p.z = ccz + cdz * factor;
 
-            // Velocity correction: also push old position if inside capsule
-            // so Verlet doesn't compute an inward velocity for the next frame.
             const oapx = p.oldX - cap.ax;
             const oapy = p.oldY - cap.ay;
             const oapz = p.oldZ - cap.az;
@@ -565,33 +605,22 @@ export class HairPhysics {
 
     /**
      * Run one frame of physics simulation. Call from animate() before render.
-     *
-     * Uses a time accumulator to consume real elapsed time in fixed 1/60s slices,
-     * ensuring simulation speed is independent of screen refresh rate.
-     * A 144Hz monitor and a 30Hz device will both see identical physics behaviour.
-     *
      * @param {number} dt - Real elapsed frame time (seconds) from clock.getDelta().
      */
     update(dt) {
         if (!this.initialized || dt <= 0) return;
 
         const fixedDT = 1 / 60;
-
-        // Clamp dt to 100ms so a background tab or GC spike can't send the
-        // accumulator (and therefore physics steps) out of control.
         this._accumulator += Math.min(dt, 0.1);
 
-        // Update colliders once — head bone position is the same for all steps.
-        this._updateColliders();
-
-        // Consume accumulated time in fixed-size slices.
-        // Each slice is one full physics step at exactly 1/60s.
+        // Consume accumulated time in fixed-size slices
         while (this._accumulator >= fixedDT) {
+            this._updateColliders();
             this._stepSimulation(fixedDT);
             this._accumulator -= fixedDT;
         }
 
-        // Write final bone rotations after all steps for this frame are done.
+        // Write final bone rotations after all steps for this frame are done
         for (const chain of this.chains) {
             chain.writeBack();
         }
@@ -663,5 +692,119 @@ export class HairPhysics {
      * so this is a no-op placeholder kept for API symmetry.
      */
     setDebug(_enabled) { /* callers use HairColliderHelper.setVisible() */ }
-}
 
+    // ------------------------------------------
+    // Auto Chain Detection
+    // ------------------------------------------
+
+    /**
+     * Traverse a GLTF scene's bone hierarchy and automatically detect
+     * hair/physics bone chains based on topology (linear chain length ≥ 3)
+     * and a blacklist of known non-hair bone name patterns.
+     *
+     * Returns a config object in the same format as hair-config.json:
+     *   { chains: [{ anchor, bones, boneAxis }] }
+     *
+     * Does NOT call init() — pure scanner with no side effects.
+     *
+     * @param {THREE.Object3D} gltfScene
+     * @returns {{ chains: Array<{ anchor: string, bones: string[], boneAxis: string }> }}
+     */
+    autoDetectChains(gltfScene) {
+        const BLACKLIST = /body|cloth|collar|elbow|hand|foot|neutral|eye|jaw|ear|tongue|brow|mouth/i;
+        const MIN_CHAIN_LENGTH = 3; // anchor + at least 2 physics bones
+
+        // Collect all bones
+        const allBones = [];
+        gltfScene.traverse(node => { if (node.isBone) allBones.push(node); });
+        gltfScene.updateMatrixWorld(true);
+
+        // Find bones that are the START of a linear chain:
+        // - Has exactly 1 bone child (linear, not branching)
+        // - Parent is NOT also exactly-1-bone-child (i.e. this is the chain root, not the middle)
+        const chainRoots = allBones.filter(bone => {
+            const boneKids = bone.children.filter(c => c.isBone);
+            if (boneKids.length !== 1) return false;
+            const parentBoneKids = bone.parent?.isBone
+                ? bone.parent.children.filter(c => c.isBone)
+                : [];
+            // A chain root: parent either is not a bone, or parent branches (length !== 1)
+            return parentBoneKids.length !== 1;
+        });
+
+        const chains = [];
+
+        for (const root of chainRoots) {
+            // Trace full chain downward
+            const chain = [];
+            let current = root;
+            while (current) {
+                chain.push(current);
+                const kids = current.children.filter(c => c.isBone);
+                current = kids.length === 1 ? kids[0] : null;
+            }
+
+            // Filter 1: minimum length (anchor + ≥2 physics bones)
+            if (chain.length < MIN_CHAIN_LENGTH) continue;
+
+            // Filter 2: blacklist — skip if any bone in the chain matches
+            if (chain.some(b => BLACKLIST.test(b.name))) continue;
+
+            // Anchor = index 0 (chain root / attachment point), physics bones = index 1+
+            const anchor = chain[0];
+            const physicsBones = chain.slice(1);
+            if (!anchor || physicsBones.length < 1) continue;
+
+            // Auto-detect boneAxis from world-space direction
+            const boneAxis = this._detectBoneAxis(anchor, physicsBones[0]);
+
+            chains.push({
+                anchor: anchor.name,
+                bones: physicsBones.map(b => b.name),
+                boneAxis,
+            });
+        }
+
+        console.log(`[HairPhysics] autoDetectChains: found ${chains.length} chain(s).`);
+        return { chains };
+    }
+
+    /**
+     * Determine which local axis (+Y, -Y, +X, -X, +Z, -Z) of anchorBone
+     * most closely aligns with the world-space direction from anchorBone
+     * to firstPhysicsBone. Used to auto-set boneAxis.
+     *
+     * @param {THREE.Bone} anchorBone
+     * @param {THREE.Bone} firstPhysicsBone
+     * @returns {string}
+     */
+    _detectBoneAxis(anchorBone, firstPhysicsBone) {
+        const AXES = [
+            { axis: '+Y', dir: new THREE.Vector3(0, 1, 0) },
+            { axis: '-Y', dir: new THREE.Vector3(0, -1, 0) },
+            { axis: '+X', dir: new THREE.Vector3(1, 0, 0) },
+            { axis: '-X', dir: new THREE.Vector3(-1, 0, 0) },
+            { axis: '+Z', dir: new THREE.Vector3(0, 0, 1) },
+            { axis: '-Z', dir: new THREE.Vector3(0, 0, -1) },
+        ];
+
+        const wp1 = new THREE.Vector3();
+        const wp2 = new THREE.Vector3();
+        anchorBone.getWorldPosition(wp1);
+        firstPhysicsBone.getWorldPosition(wp2);
+
+        // World direction anchor → first physics bone
+        const worldDir = wp2.sub(wp1).normalize();
+
+        // Convert to anchor's local space
+        const invMat = new THREE.Matrix4().copy(anchorBone.matrixWorld).invert();
+        const localDir = worldDir.clone().transformDirection(invMat);
+
+        let best = '+Y', bestDot = -Infinity;
+        for (const { axis, dir } of AXES) {
+            const dot = localDir.dot(dir);
+            if (dot > bestDot) { bestDot = dot; best = axis; }
+        }
+        return best;
+    }
+}

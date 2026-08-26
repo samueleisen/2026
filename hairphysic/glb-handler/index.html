@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GLB Configurator &amp; Collider Authoring Tool</title>
+  <meta name="description" content="Import GLB/GLTF models, visually author collision volumes (Sphere &amp; Capsule), and export collision data as JSON." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<canvas id="viewport"></canvas>
+
+<!-- DROP OVERLAY -->
+<div id="drop-overlay">
+  <svg class="drop-icon" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="40" cy="40" r="37" stroke="url(#gd)" stroke-width="1.5" stroke-dasharray="6 4"/>
+    <path d="M40 22v24M28 34l12-12 12 12" stroke="url(#gd)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M26 54h28" stroke="url(#gd)" stroke-width="2" stroke-linecap="round"/>
+    <defs>
+      <linearGradient id="gd" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#6e8efb"/><stop offset="1" stop-color="#a777e3"/>
+      </linearGradient>
+    </defs>
+  </svg>
+  <div class="drop-title">Drop GLB / GLTF files here</div>
+  <div class="drop-sub">Supports Draco-compressed and multi-mesh assets</div>
+  <button class="drop-btn" id="drop-browse-btn">Browse Files</button>
+</div>
+
+<input type="file" id="file-input" multiple accept=".glb,.gltf" style="display:none" />
+
+<!-- TOOLBAR -->
+<div id="toolbar" class="glass-panel">
+  <button class="tool-btn active" id="tool-select">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 3l14 9-7 1-4 7z"/>
+    </svg>
+    <span class="tool-tooltip">Select (V)</span>
+  </button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn" id="tool-sphere">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="12" r="8"/>
+      <ellipse cx="12" cy="12" rx="8" ry="3"/>
+      <line x1="12" y1="4" x2="12" y2="20"/>
+    </svg>
+    <span class="tool-tooltip">Sphere Collider (E)</span>
+  </button>
+  <button class="tool-btn" id="tool-capsule">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="8" y="5" width="8" height="14" rx="4"/>
+    </svg>
+    <span class="tool-tooltip">Capsule Collider (C)</span>
+  </button>
+  <div class="tool-sep"></div>
+  <button class="tool-btn" id="btn-ortho">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <rect x="3" y="3" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>
+      <line x1="7" y1="11" x2="17" y2="13" stroke-dasharray="2 1"/>
+    </svg>
+    <span class="tool-tooltip">Toggle Ortho (O)</span>
+  </button>
+  <button class="tool-btn active" id="btn-infront">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+      <polyline points="2 17 12 22 22 17"/>
+      <polyline points="2 12 12 17 22 12"/>
+    </svg>
+    <span class="tool-tooltip">In Front / X-Ray (X)</span>
+  </button>
+  <button class="tool-btn" id="btn-frame">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+      <path d="M3 9V5a2 2 0 012-2h4M15 3h4a2 2 0 012 2v4M21 15v4a2 2 0 01-2 2h-4M9 21H5a2 2 0 01-2-2v-4"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+    <span class="tool-tooltip">Frame Selection (F)</span>
+  </button>
+</div>
+
+<!-- VIEW HUD -->
+<div id="view-hud">Perspective</div>
+
+<!-- MODAL HINT -->
+<div id="modal-hint"></div>
+
+<!-- HOTKEY BAR -->
+<div id="hotkey-bar">
+  <div class="hk"><kbd>G</kbd> Grab</div>
+  <div class="hk"><kbd>S</kbd> Scale</div>
+  <div class="hk"><kbd>Del</kbd> Remove</div>
+  <div class="hk"><kbd>F</kbd> Frame</div>
+</div>
+
+<!-- LEFT: MODELS PANEL -->
+<div id="model-panel" class="glass-panel">
+  <div class="panel-header">
+    <span class="panel-title">Models</span>
+    <div class="panel-actions">
+      <span class="panel-badge" id="model-count">0</span>
+      <button class="icon-btn" id="btn-add-model" title="Load model">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="panel-scroll" id="model-list">
+    <div class="empty-state">No models loaded.<br/>Drop a GLB file to get started.</div>
+  </div>
+</div>
+
+<!-- RIGHT: COLLIDERS PANEL -->
+<div id="collider-panel" class="glass-panel">
+  <div class="panel-header">
+    <span class="panel-title">Colliders</span>
+    <div class="panel-actions">
+      <span class="panel-badge" id="collider-count">0</span>
+    </div>
+  </div>
+  <div class="panel-scroll" id="collider-list">
+    <div class="empty-state">No colliders yet.<br/>Use Sphere/Capsule tool to draw.</div>
+  </div>
+  <div class="panel-footer" id="collider-footer" style="display:none">
+    <button class="btn-full" id="btn-copy-json">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"/>
+        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+      </svg>
+      Copy JSON
+    </button>
+    <button class="btn-full primary" id="btn-download-json">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+      Download JSON
+    </button>
+  </div>
+</div>
+
+<!-- PANEL TOGGLES -->
+<div class="panel-toggle" id="toggle-model-panel">&#8249;</div>
+<div class="panel-toggle" id="toggle-collider-panel">&#8250;</div>
+
+<!-- GIZMO -->
+<canvas id="gizmo-canvas" width="96" height="96" title="Orientation Gizmo (Click axis to snap, click again to exit, drag to orbit)"></canvas>
+
+<!-- CONTEXT MENU -->
+<div id="ctx-menu">
+  <div class="ctx-item" id="ctx-grab">&#10021; Grab <span style="margin-left:auto;opacity:0.5;font-size:10px">G</span></div>
+  <div class="ctx-item" id="ctx-scale">&#10021; Scale <span style="margin-left:auto;opacity:0.5;font-size:10px">S</span></div>
+  <div class="ctx-sep"></div>
+  <div class="ctx-item ctx-danger" id="ctx-delete">&#128465; Delete <span style="margin-left:auto;opacity:0.5;font-size:10px">Del</span></div>
+</div>
+
+<script type="module" src="main.js"></script>
+</body>
+</html>
